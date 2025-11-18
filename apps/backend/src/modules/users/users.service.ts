@@ -1,26 +1,85 @@
-import { Injectable } from '@nestjs/common';
+// Common
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+// ORM
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+// Entity
+import { User } from './entities/user.entity';
+
+// Dto's
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+  ) {}
+
+  async create(createUserDto: CreateUserDto) {
+    const user = this.userRepo.create(createUserDto);
+    return await this.userRepo.save(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<User[]> {
+    return await this.userRepo.find({
+      select: [
+        'id',
+        'username',
+        'email',
+        'avatarUrl',
+        'bio',
+        'location',
+        'profileUrl',
+        'createdAt',
+      ],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const user = await this.userRepo.findOne({
+      where: { id },
+      select: [
+        'id',
+        'username',
+        'email',
+        'avatarUrl',
+        'bio',
+        'location',
+        'profileUrl',
+        'createdAt',
+      ],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findByGithubId(githubId: string): Promise<User | null> {
+    return await this.userRepo.findOne({
+      where: { githubId },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(id);
+    Object.assign(user, updateUserDto);
+
+    return await this.userRepo.save(user);
+  }
+
+  async updateRefreshToken(userId: string, refreshToken: string | null): Promise<void> {
+    await this.userRepo.update(userId, { refreshToken });
+  }
+
+  async remove(id: string) {
+    const user = await this.findOne(id);
+    return await this.userRepo.remove(user);
   }
 }
