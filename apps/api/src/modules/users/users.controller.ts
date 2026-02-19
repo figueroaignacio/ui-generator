@@ -1,10 +1,5 @@
-// Decorators
 import { Body, Controller, Delete, Get, Param, Patch, Request, UseGuards } from '@nestjs/common';
-
-// Guards
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-
-// Dto's
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 

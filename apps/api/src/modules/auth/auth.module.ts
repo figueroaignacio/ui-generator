@@ -1,17 +1,10 @@
-// Nest
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-
-// Modules
 import { UsersModule } from '../users/users.module';
-
-// Controllers & Services
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-
-// Strategies
 import { GithubStrategy } from './strategies/github.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';

@@ -1,12 +1,7 @@
-// Decorators
 import { Controller, Get, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
-
-// Service
 import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
-
-// Guards
 import { GithubAuthGuard } from './guards/github-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';

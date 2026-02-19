@@ -1,4 +1,3 @@
-// Decorators
 import {
   Column,
   CreateDateColumn,
