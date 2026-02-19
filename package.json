@@ -1,5 +1,5 @@
 {
-  "name": "commitcode",
+  "name": "nach-ai",
   "private": true,
   "scripts": {
     "build": "turbo run build",

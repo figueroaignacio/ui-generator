@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 
@@ -53,11 +54,11 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-        expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRATION'),
+        expiresIn: this.configService.get('JWT_ACCESS_EXPIRATION'),
       }),
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-        expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION'),
+        expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION'),
       }),
     ]);
 
@@ -73,11 +74,13 @@ export class AuthService {
     const user = await this.usersService.findOne(userId);
 
     if (!user || !user.refreshToken) {
-      throw new Error('Access denied');
+      throw new UnauthorizedException('Access denied');
     }
 
-    if (user.refreshToken !== refreshToken) {
-      throw new Error('Invalid refresh token');
+    const isRefreshTokenMatching = await bcrypt.compare(refreshToken, user.refreshToken);
+
+    if (!isRefreshTokenMatching) {
+      throw new UnauthorizedException('Invalid refresh token');
     }
 
     return this.generateTokens(user);
