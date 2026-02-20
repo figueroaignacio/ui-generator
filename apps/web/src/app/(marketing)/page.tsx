@@ -1,3 +1,9 @@
+import { Hero } from '@/components/marketing/hero';
+
 export default function Home() {
-  return <section></section>;
+  return (
+    <main>
+      <Hero />
+    </main>
+  );
 }
