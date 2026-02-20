@@ -1,5 +1,6 @@
 import { Button } from '@repo/ui/components/button';
 import Link from 'next/link';
+import { GitHubIcon } from '../shared/tech-icons';
 
 export function Navbar() {
   return (
@@ -10,7 +11,9 @@ export function Navbar() {
         </Link>
       </div>
       <div>
-        <Button>Continue with GitHub</Button>
+        <Button leftIcon={<GitHubIcon />} variant="outline">
+          Continue with GitHub
+        </Button>
       </div>
     </nav>
   );
