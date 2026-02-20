@@ -1,19 +1,22 @@
-import { Button } from '@repo/ui/components/button';
+'use client';
+
+import { ArrowRight02Icon } from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { buttonVariants } from '@repo/ui/components/button';
 import Link from 'next/link';
-import { GitHubIcon } from '../shared/tech-icons';
+import { Logo } from '../shared/logo';
 
 export function Navbar() {
   return (
     <nav className="flex w-full items-center justify-between">
-      <div className="flex items-center gap-6">
-        <Link href="/" className="font-bold text-xl tracking-tight">
-          NachAI
-        </Link>
+      <div className="flex flex-col items-center gap-x-2">
+        <Logo />
+        <span className="font-mono font-semibold">NachAI</span>
       </div>
       <div>
-        <Button leftIcon={<GitHubIcon />} variant="outline" size="sm">
-          Continue with GitHub
-        </Button>
+        <Link href="/login" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
+          Get Started <HugeiconsIcon icon={ArrowRight02Icon} />
+        </Link>
       </div>
     </nav>
   );
