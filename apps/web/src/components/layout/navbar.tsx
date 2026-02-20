@@ -11,7 +11,7 @@ export function Navbar() {
         </Link>
       </div>
       <div>
-        <Button leftIcon={<GitHubIcon />} variant="outline">
+        <Button leftIcon={<GitHubIcon />} variant="outline" size="sm">
           Continue with GitHub
         </Button>
       </div>

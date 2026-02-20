@@ -1,4 +1,6 @@
+import { Button } from '@repo/ui/components/button';
 import Link from 'next/link';
+import { GitHubIcon } from '../shared/tech-icons';
 
 export function NavigationBar() {
   return (
@@ -6,9 +8,9 @@ export function NavigationBar() {
       <Link href="/" className="font-bold text-xl tracking-tight">
         NachAI
       </Link>
-      <button className="inline-flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+      <Button leftIcon={<GitHubIcon />} variant="outline" size="sm">
         Continue with GitHub
-      </button>
+      </Button>
     </nav>
   );
 }
