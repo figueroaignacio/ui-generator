@@ -30,10 +30,10 @@ export function useAuth() {
   }, []);
 
   const logout = useCallback(async () => {
-    setStatus('loading');
+    setStatus('loading', 'Signing out...');
     await apiLogout();
     clearAuth();
-    window.location.href = '/login';
+    window.location.href = '/';
   }, [clearAuth, setStatus]);
 
   return {
