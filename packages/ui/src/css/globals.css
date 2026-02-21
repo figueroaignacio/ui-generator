@@ -2,7 +2,7 @@
 @source '../../../../packages/ui/src/**/*.{js,ts,jsx,tsx,mdx}';
 @custom-variant dark (&:where(.dark, .dark *));
 
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #1f1f1f;
   --card: #f0f4f9;
@@ -29,9 +29,9 @@
   --input: #ffffff;
   --ring: #0b57d0;
   --radius: 0.5rem;
-}
+} */
 
-.dark {
+:root {
   --background: #000000;
   --foreground: #e3e3e3;
   --card: #1e1f20;
@@ -57,6 +57,7 @@
   --border: #1b1b1c;
   --input: #111111;
   --ring: #8ab4f8;
+  --radius: 0.5rem;
 }
 
 @theme inline {
