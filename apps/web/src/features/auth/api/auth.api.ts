@@ -27,6 +27,16 @@ export async function getAuthStatus(): Promise<{
   }
 }
 
+export async function getMe(): Promise<User | null> {
+  try {
+    const res = await fetchWithCredentials('/api/users/me');
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function logout(): Promise<void> {
   try {
     await fetchWithCredentials('/api/auth/logout', { method: 'POST' });

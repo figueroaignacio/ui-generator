@@ -5,8 +5,8 @@ export interface User {
   avatarUrl: string | null;
   bio: string | null;
   location: string | null;
-  profileUrl: string;
-  githubId: string;
+  profileUrl: string | null;
+  createdAt: string;
 }
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';

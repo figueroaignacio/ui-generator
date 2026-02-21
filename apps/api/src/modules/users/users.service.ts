@@ -38,6 +38,7 @@ export class UsersService {
       where: { id },
       select: [
         'id',
+        'githubId',
         'username',
         'email',
         'avatarUrl',
