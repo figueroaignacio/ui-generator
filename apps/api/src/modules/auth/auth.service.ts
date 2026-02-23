@@ -8,7 +8,6 @@ import { UsersService } from '../users/users.service';
 export interface JwtPayload {
   sub: string;
   username: string;
-  githubId: string;
 }
 
 export interface AuthTokens {
@@ -44,11 +43,29 @@ export class AuthService {
     return user;
   }
 
+  async validateGoogleUser(profile: any): Promise<User> {
+    const { id, displayName, emails, photos } = profile;
+    const email = emails?.[0]?.value || null;
+
+    let user = await this.usersService.findByGoogleId(id);
+
+    if (!user) {
+      user = await this.usersService.create({
+        googleId: id,
+        username: displayName || email?.split('@')[0] || `user_${id}`,
+        email,
+        avatarUrl: photos?.[0]?.value || null,
+        profileUrl: `https://accounts.google.com/${id}`,
+      });
+    }
+
+    return user;
+  }
+
   async generateTokens(user: User): Promise<AuthTokens> {
     const payload: JwtPayload = {
       sub: user.id,
       username: user.username,
-      githubId: user.githubId,
     };
 
     const [accessToken, refreshToken] = await Promise.all([

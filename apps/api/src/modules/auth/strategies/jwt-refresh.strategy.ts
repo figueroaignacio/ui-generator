@@ -38,7 +38,6 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     return {
       id: payload.sub,
       username: payload.username,
-      githubId: payload.githubId,
       refreshToken,
     };
   }

@@ -43,6 +43,10 @@ export async function logout(): Promise<void> {
   } catch {}
 }
 
+export function loginWithGoogle(): void {
+  window.location.href = `${API_URL}/api/auth/google`;
+}
+
 export async function refreshTokens(): Promise<boolean> {
   try {
     const res = await fetchWithCredentials('/api/auth/refresh', { method: 'POST' });

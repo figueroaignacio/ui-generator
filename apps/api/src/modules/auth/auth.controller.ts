@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { GithubAuthGuard } from './guards/github-auth.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
@@ -13,21 +14,30 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  // ── GitHub ──────────────────────────────────────────────────────────────
   @Get('github')
   @UseGuards(GithubAuthGuard)
-  githubLogin() {
-    // Guard redirects to GitHub
-  }
+  githubLogin() {}
 
   @Get('github/callback')
   @UseGuards(GithubAuthGuard)
   async githubCallback(@Req() req, @Res() res: Response) {
     const { accessToken, refreshToken } = await this.authService.generateTokens(req.user);
-
     this.setAuthCookies(res, accessToken, refreshToken);
+    return res.redirect(`${this.configService.get<string>('FRONTEND_URL')}/auth/callback`);
+  }
 
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    return res.redirect(`${frontendUrl}/auth/callback`);
+  // ── Google ───────────────────────────────────────────────────────────────
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  googleLogin() {}
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleCallback(@Req() req, @Res() res: Response) {
+    const { accessToken, refreshToken } = await this.authService.generateTokens(req.user);
+    this.setAuthCookies(res, accessToken, refreshToken);
+    return res.redirect(`${this.configService.get<string>('FRONTEND_URL')}/auth/callback`);
   }
 
   @Post('refresh')

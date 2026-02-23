@@ -1,8 +1,13 @@
 import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDto {
+  @IsOptional()
   @IsString()
-  githubId: string;
+  githubId?: string;
+
+  @IsOptional()
+  @IsString()
+  googleId?: string;
 
   @IsString()
   username: string;

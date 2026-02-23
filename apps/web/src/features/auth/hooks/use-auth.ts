@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect } from 'react';
-import { logout as apiLogout, getMe } from '../api/auth.api';
+import { loginWithGoogle as apiLoginWithGoogle, logout as apiLogout, getMe } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -29,6 +29,10 @@ export function useAuth() {
     window.location.href = `${API_URL}/api/auth/github`;
   }, []);
 
+  const loginWithGoogle = useCallback(() => {
+    apiLoginWithGoogle();
+  }, []);
+
   const logout = useCallback(async () => {
     setStatus('loading', 'Signing out...');
     await apiLogout();
@@ -42,6 +46,7 @@ export function useAuth() {
     isAuthenticated: status === 'authenticated',
     isLoading: status === 'loading',
     login,
+    loginWithGoogle,
     logout,
     setUser,
   };

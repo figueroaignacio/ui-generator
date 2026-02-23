@@ -1,7 +1,7 @@
 'use client';
 
 import { Logo } from '@/components/shared/logo';
-import { GitHubIcon } from '@/components/shared/tech-icons';
+import { GitHubIcon, GoogleIcon } from '@/components/shared/tech-icons';
 import { Button } from '@repo/ui/components/button';
 import {
   Card,
@@ -22,15 +22,20 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export function LoginCardInner() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const searchParams = useSearchParams();
   const errorKey = searchParams.get('error');
   const errorMessage = errorKey ? (ERROR_MESSAGES[errorKey] ?? ERROR_MESSAGES.default) : null;
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState<'github' | 'google' | null>(null);
 
-  function handleLogin() {
-    setIsLoading(true);
+  function handleGithubLogin() {
+    setLoadingProvider('github');
     login();
+  }
+
+  function handleGoogleLogin() {
+    setLoadingProvider('google');
+    loginWithGoogle();
   }
 
   return (
@@ -48,7 +53,7 @@ export function LoginCardInner() {
         <CardHeader className="pb-4 text-center">
           <CardTitle className="text-base">Get started for free</CardTitle>
           <CardDescription>
-            Connect your GitHub account and start generating components in seconds.
+            Connect your account and start generating components in seconds.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -58,14 +63,24 @@ export function LoginCardInner() {
             </div>
           )}
           <Button
-            onClick={handleLogin}
-            loading={isLoading}
+            onClick={handleGithubLogin}
+            loading={loadingProvider === 'github'}
             leftIcon={<GitHubIcon />}
             className="w-full"
             size="sm"
             variant="secondary"
           >
             Continue with GitHub
+          </Button>
+          <Button
+            onClick={handleGoogleLogin}
+            loading={loadingProvider === 'google'}
+            leftIcon={<GoogleIcon />}
+            className="w-full"
+            size="sm"
+            variant="secondary"
+          >
+            Continue with Google
           </Button>
           <p className="text-center text-xs text-muted-foreground">
             By continuing, you agree to our{' '}

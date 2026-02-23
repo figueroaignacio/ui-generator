@@ -14,9 +14,13 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   @Index()
-  githubId: string;
+  githubId: string | null;
+
+  @Column({ unique: true, nullable: true })
+  @Index()
+  googleId: string | null;
 
   @Column()
   username: string;
