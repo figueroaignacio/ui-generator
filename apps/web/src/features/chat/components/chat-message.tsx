@@ -43,7 +43,7 @@ export function ChatMessage({ message, avatarUrl, username }: ChatMessageProps) 
             : 'bg-card border border-border text-foreground rounded-bl-sm',
         )}
       >
-        <p className="whitespace-pre-wrap break-words">{message.content}</p>
+        <p className="whitespace-pre-wrap wrap-break-word">{message.content}</p>
       </div>
 
       {/* User avatar */}
