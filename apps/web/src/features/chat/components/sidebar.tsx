@@ -44,18 +44,18 @@ function MobileSidebar() {
       </button>
       {open && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-background/60 backdrop-blur-sm"
+          className="md:hidden fixed inset-0 z-40 bg-background/60 backdrop-blur-xs"
           onClick={() => setOpen(false)}
         />
       )}
       <aside
         className={cn(
-          'md:hidden fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-secondary border-r border-border',
+          'md:hidden fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-card border-r border-border',
           'transition-transform duration-300 ease-in-out',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
       >
-        <div className="flex items-center justify-between px-3 py-3 border-b border-border/50">
+        <div className="flex items-center justify-between px-3 py-3">
           <span className="font-heading font-semibold text-sm">NachAI</span>
           <button
             onClick={() => setOpen(false)}
