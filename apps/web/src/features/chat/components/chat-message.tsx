@@ -27,14 +27,11 @@ export function ChatMessage({ message, avatarUrl, username }: ChatMessageProps) 
       transition={{ duration: 0.25, ease: 'easeOut' }}
       className={cn('flex gap-3 w-full', isUser ? 'justify-end' : 'justify-start')}
     >
-      {/* Assistant avatar */}
       {!isUser && (
         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary mt-0.5">
           <HugeiconsIcon icon={SparklesIcon} size={14} />
         </div>
       )}
-
-      {/* Bubble */}
       <div
         className={cn(
           'max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
@@ -45,8 +42,6 @@ export function ChatMessage({ message, avatarUrl, username }: ChatMessageProps) 
       >
         <p className="whitespace-pre-wrap wrap-break-word">{message.content}</p>
       </div>
-
-      {/* User avatar */}
       {isUser && (
         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full overflow-hidden mt-0.5 ring-2 ring-border">
           {avatarUrl ? (

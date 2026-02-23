@@ -5,8 +5,8 @@ export function Hero() {
   return (
     <section className="relative flex min-h-[calc(100vh-3.5rem)] overflow-hidden">
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-12 px-6 py-24 lg:flex-row lg:items-center lg:gap-20 lg:py-0">
-        <div className="flex flex-1 flex-col items-center text-center lg:items-start lg:text-left">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
+        <div className="flex flex-1 flex-col r lg:items-start lg:text-left">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground w-fit">
             <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
             Coming soon — currently in development
           </div>

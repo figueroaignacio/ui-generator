@@ -25,7 +25,6 @@ export function ChatInput({
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
@@ -44,7 +43,6 @@ export function ChatInput({
 
   return (
     <div className="w-full rounded-2xl border border-border bg-card shadow-sm focus-within:ring-2 focus-within:ring-primary/20 transition-shadow">
-      {/* Textarea */}
       <textarea
         ref={textareaRef}
         value={value}
@@ -56,8 +54,6 @@ export function ChatInput({
         style={{ maxHeight: '200px' }}
         disabled={isLoading}
       />
-
-      {/* Bottom toolbar */}
       <div className="flex items-center justify-end px-3 pb-3 pt-1">
         {isLoading ? (
           <motion.button
