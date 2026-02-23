@@ -13,7 +13,7 @@ export function ChatHero({ username }: ChatHeroProps) {
 
   return (
     <motion.div
-      className="flex flex-col gap-2 px-4"
+      className="flex flex-col items-center md:items-start justify-center md:justify-start text-center gap-2 px-4"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
