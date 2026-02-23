@@ -19,15 +19,6 @@ async function fetchWithCredentials(path: string, options: RequestInit = {}) {
     throw new Error(error || `Request failed: ${res.status}`);
   }
 
-  // Clone response to log it without consuming the stream
-  res
-    .clone()
-    .json()
-    .then(data => {
-      console.log(`API Response [${res.status}] ${path}:`, data);
-    })
-    .catch(() => {});
-
   return res;
 }
 

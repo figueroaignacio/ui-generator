@@ -18,7 +18,7 @@ export function proxy(request: NextRequest) {
   }
 
   if (isAuthPage && isAuthenticated) {
-    const chatUrl = new URL('/chat', request.url);
+    const chatUrl = new URL('/chat/new', request.url);
     return NextResponse.redirect(chatUrl);
   }
 

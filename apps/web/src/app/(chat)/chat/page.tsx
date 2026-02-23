@@ -1,5 +1,5 @@
-import { ChatPage } from '@/features/chat/components/chat-page';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return <ChatPage />;
+  redirect('/chat/new');
 }

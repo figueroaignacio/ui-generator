@@ -19,17 +19,14 @@ export function useConversation(conversationId: string) {
   // Load conversation history
   useEffect(() => {
     setIsFetching(true);
-    console.log('Fetching conversation:', conversationId);
     getConversation(conversationId)
       .then(data => {
-        console.log('Conversation data received:', data);
         const msgs = data.messages ?? [];
         setMessages(msgs);
         if (data.title) updateConversationTitle(conversationId, data.title);
 
         // Auto-respond if first user message is solitary
         if (msgs.length === 1 && msgs[0].role === 'user' && !isLoading) {
-          console.log('Detected fresh conversation, triggering AI response...');
           apiGenerate(conversationId).then(assistantMsg => {
             setMessages(prev => [...prev, assistantMsg]);
           });

@@ -13,7 +13,7 @@ export function SidebarNav({ collapsed }: SidebarNavProps) {
   const router = useRouter();
 
   const items = [
-    { icon: Add01Icon, label: 'New chat', onClick: () => router.push('/chat') },
+    { icon: Add01Icon, label: 'New chat', onClick: () => router.push('/chat/new') },
     { icon: Search01Icon, label: 'Search', onClick: () => {} },
   ];
 
