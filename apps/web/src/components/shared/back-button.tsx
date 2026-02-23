@@ -13,8 +13,12 @@ export function BackButton() {
   }
 
   return (
-    <Button onClick={handleBack} variant="link" leftIcon={<HugeiconsIcon icon={ArrowLeft02Icon} />}>
-      <span>Back</span>
-    </Button>
+    <Button
+      onClick={handleBack}
+      variant="link"
+      size="icon"
+      className="text-foreground"
+      leftIcon={<HugeiconsIcon icon={ArrowLeft02Icon} />}
+    />
   );
 }

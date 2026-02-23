@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { HelpCircleIcon, Logout01Icon, Settings01Icon } from '@hugeicons/core-free-icons';
+import { HelpCircleIcon, Logout01Icon, UserCircle02Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   DropdownMenu,
@@ -10,9 +10,11 @@ import {
   DropdownMenuTrigger,
   DropdownSeparator,
 } from '@repo/ui/components/dropdown-menu';
+import { useRouter } from 'next/navigation';
 
 export function UserMenu() {
   const { user, logout } = useAuth();
+  const router = useRouter();
 
   if (!user) return null;
 
@@ -64,13 +66,13 @@ export function UserMenu() {
           </div>
         </div>
         <DropdownSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => router.push('/profile')}>
           <HugeiconsIcon
-            icon={Settings01Icon}
+            icon={UserCircle02Icon}
             size={15}
             className="mr-2.5 shrink-0 text-muted-foreground"
           />
-          Settings
+          Profile
         </DropdownMenuItem>
         <DropdownMenuItem>
           <HugeiconsIcon
