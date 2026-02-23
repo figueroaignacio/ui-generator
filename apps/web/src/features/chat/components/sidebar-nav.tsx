@@ -16,7 +16,7 @@ const NAV_ITEMS = [
 
 export function SidebarNav({ collapsed }: SidebarNavProps) {
   return (
-    <nav className="flex flex-col gap-0.5 p-2 border-b border-border/50">
+    <nav className="flex flex-col gap-0.5 p-2">
       {NAV_ITEMS.map(({ icon, label, onClick }) => (
         <SidebarNavItem
           key={label}

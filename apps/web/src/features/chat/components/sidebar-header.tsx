@@ -13,7 +13,7 @@ export function SidebarHeader({ collapsed, onToggle }: SidebarHeaderProps) {
   return (
     <div
       className={cn(
-        'flex items-center border-b border-border/50 py-3 shrink-0',
+        'flex items-center py-3 shrink-0',
         collapsed ? 'justify-center px-0' : 'justify-between px-3',
       )}
     >
