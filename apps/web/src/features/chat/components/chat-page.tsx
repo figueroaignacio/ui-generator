@@ -2,7 +2,10 @@
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { AnimatePresence, motion } from 'motion/react';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { addMessage, createConversation } from '../api/conversations.api';
+import { useConversationsStore } from '../store/conversations.store';
 import { ChatHero } from './chat-hero';
 import { ChatInput } from './chat-input';
 import { ChatMessage, type Message } from './chat-message';
@@ -21,32 +24,31 @@ export function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const router = useRouter();
+  const addConversation = useConversationsStore(s => s.addConversation);
+
   const handleSubmit = useCallback(async () => {
     const content = input.trim();
     if (!content || isLoading) return;
 
     setInput('');
-
-    const userMessage: Message = {
-      id: crypto.randomUUID(),
-      role: 'user',
-      content,
-    };
-
-    setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    // TODO: wire to POST /api/conversations/:id/messages
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: `Here's a component for: "${content}"\n\n(Backend integration coming soon)`,
-      };
-      setMessages(prev => [...prev, assistantMessage]);
+    try {
+      // 1. Create a new conversation
+      const conversation = await createConversation();
+      addConversation(conversation);
+
+      // 2. Add the user message
+      await addMessage(conversation.id, 'user', content);
+
+      // 3. Redirect to the active chat
+      router.push(`/chat/c/${conversation.id}`);
+    } catch (err) {
+      console.error('Failed to start chat:', err);
       setIsLoading(false);
-    }, 1200);
-  }, [input, isLoading]);
+    }
+  }, [input, isLoading, addConversation, router]);
 
   return (
     <div className="flex flex-col h-full">

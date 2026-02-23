@@ -45,6 +45,11 @@ export class ConversationsController {
     return this.conversationsService.addMessage(id, req.user.id, dto);
   }
 
+  @Post(':id/generate')
+  generate(@Request() req, @Param('id', ParseUUIDPipe) id: string) {
+    return this.conversationsService.generateResponse(id, req.user.id);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Request() req, @Param('id', ParseUUIDPipe) id: string) {

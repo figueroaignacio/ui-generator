@@ -84,9 +84,46 @@ export class ConversationsService {
     await this.conversationRepo.remove(conversation);
   }
 
+  async generateResponse(conversationId: string, userId: string): Promise<Message> {
+    const conversation = await this.findOne(conversationId, userId);
+
+    if (!conversation.messages || conversation.messages.length === 0) {
+      throw new NotFoundException('No messages found in this conversation');
+    }
+
+    const history = conversation.messages.map(msg => ({
+      role: msg.role as 'user' | 'assistant',
+      content: msg.content,
+    })) as any[];
+
+    try {
+      this.logger.log(`Calling Gemini for conversation ${conversationId}...`);
+      const { text } = await generateText({
+        model: google('gemini-2.5-flash'),
+        system: SYSTEM_PROMPT,
+        messages: history,
+      });
+
+      const assistantMessage = this.messageRepo.create({
+        role: MessageRole.ASSISTANT,
+        content: text,
+        conversationId,
+      });
+
+      const saved = await this.messageRepo.save(assistantMessage);
+
+      await this.conversationRepo.update(conversationId, { updatedAt: new Date() });
+
+      return saved;
+    } catch (error) {
+      this.logger.error(`Error in generateResponse for conversation ${conversationId}:`, error);
+      throw error;
+    }
+  }
+
   private generateAndSaveTitle(conversation: Conversation, firstMessage: string): void {
     generateText({
-      model: google('gemini-2.0-flash-lite'),
+      model: google('gemini-2.5-flash'),
       system: SYSTEM_PROMPT,
       prompt: `Generate a concise, descriptive sidebar title (max 6 words, no quotes, no punctuation at the end) that summarizes this chat request: "${firstMessage}"`,
     })
