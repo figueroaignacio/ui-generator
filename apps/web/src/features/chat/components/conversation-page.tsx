@@ -92,9 +92,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
           <div ref={bottomRef} />
         </div>
       </div>
-
-      {/* Sticky input */}
-      <div className="shrink-0 border-t border-border/50 bg-background/80 backdrop-blur-sm px-4 py-3">
+      <div className="shrink-0 px-4 py-3">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             value={input}
