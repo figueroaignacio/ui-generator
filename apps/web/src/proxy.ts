@@ -13,7 +13,7 @@ export function proxy(request: NextRequest) {
   const isAuthPage = AUTH_PATHS.some(p => pathname.startsWith(p));
 
   if (isProtected && !isAuthenticated) {
-    const loginUrl = new URL('/login', request.url);
+    const loginUrl = new URL('/', request.url);
     return NextResponse.redirect(loginUrl);
   }
 
