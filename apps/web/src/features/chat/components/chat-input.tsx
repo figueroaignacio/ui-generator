@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowUp01Icon, Cancel01Icon } from '@hugeicons/core-free-icons';
+import { Cancel01Icon, SentIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { cn } from '@repo/ui/lib/cn';
 import { motion } from 'motion/react';
@@ -83,7 +83,7 @@ export function ChatInput({
             )}
             aria-label="Send message"
           >
-            <HugeiconsIcon icon={ArrowUp01Icon} size={15} />
+            <HugeiconsIcon icon={SentIcon} size={15} />
           </motion.button>
         )}
       </div>
