@@ -1,47 +1,66 @@
-'use client';
-
-import { useCallback, useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
   addMessage as apiAddMessage,
   generateResponse as apiGenerate,
   getConversation,
 } from '../api/conversations.api';
-import { useConversationsStore } from '../store/conversations.store';
-import type { Message } from '../types';
+import type { Conversation, ConversationWithMessages, Message } from '../types';
 
 export function useConversation(conversationId: string) {
-  const updateConversationTitle = useConversationsStore(s => s.updateConversationTitle);
+  const queryClient = useQueryClient();
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
+  const query = useQuery({
+    queryKey: ['conversation', conversationId],
+    queryFn: () => getConversation(conversationId),
+    enabled: !!conversationId,
+  });
 
-  // Load conversation history
+  const conversation = query.data;
+  const generateMutation = useMutation({
+    mutationFn: () => apiGenerate(conversationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversation', conversationId] });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+  });
+
+  const messages = useMemo(() => conversation?.messages ?? [], [conversation]);
+
   useEffect(() => {
-    setIsFetching(true);
-    getConversation(conversationId)
-      .then(data => {
-        const msgs = data.messages ?? [];
-        setMessages(msgs);
-        if (data.title) updateConversationTitle(conversationId, data.title);
+    if (!conversation) return;
 
-        // Auto-respond if first user message is solitary
-        if (msgs.length === 1 && msgs[0].role === 'user' && !isLoading) {
-          apiGenerate(conversationId).then(assistantMsg => {
-            setMessages(prev => [...prev, assistantMsg]);
-          });
-        }
-      })
-      .catch(err => console.error('Failed to load conversation:', err))
-      .finally(() => setIsFetching(false));
-  }, [conversationId, updateConversationTitle, isLoading]);
+    if (conversation.id && conversation.title) {
+      queryClient.setQueryData<Conversation[]>(['conversations'], old =>
+        old?.map(c => (c.id === conversation.id ? { ...c, title: conversation.title! } : c)),
+      );
+    }
 
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (!content.trim() || isLoading) return;
-      setIsLoading(true);
+    const isFirstUserMessage = messages.length === 1 && messages[0].role === 'user';
+    const isGenerateNotStarted =
+      generateMutation.isIdle && !generateMutation.isPending && !generateMutation.isSuccess;
 
-      // Optimistic: show user message immediately
+    if (isFirstUserMessage && !query.isPlaceholderData && isGenerateNotStarted) {
+      generateMutation.mutate();
+    }
+  }, [
+    conversation,
+    conversationId,
+    messages,
+    query.isPlaceholderData,
+    queryClient,
+    generateMutation,
+  ]);
+
+  const addMessageMutation = useMutation({
+    mutationFn: (content: string) => apiAddMessage(conversationId, 'user', content),
+    onMutate: async content => {
+      await queryClient.cancelQueries({ queryKey: ['conversation', conversationId] });
+      const previousConversation = queryClient.getQueryData<ConversationWithMessages>([
+        'conversation',
+        conversationId,
+      ]);
+
       const optimisticUserMsg: Message = {
         id: crypto.randomUUID(),
         role: 'user',
@@ -49,27 +68,40 @@ export function useConversation(conversationId: string) {
         conversationId,
         createdAt: new Date().toISOString(),
       };
-      setMessages(prev => [...prev, optimisticUserMsg]);
 
-      try {
-        // 1. Persist user message
-        const savedUserMsg = await apiAddMessage(conversationId, 'user', content);
-        // Replace optimistic entry with server-confirmed one
-        setMessages(prev => prev.map(m => (m.id === optimisticUserMsg.id ? savedUserMsg : m)));
+      queryClient.setQueryData<ConversationWithMessages>(['conversation', conversationId], old => {
+        if (!old) return old;
+        return {
+          ...old,
+          messages: [...(old.messages ?? []), optimisticUserMsg],
+        };
+      });
 
-        // 2. Ask Gemini to generate a response
-        const assistantMsg = await apiGenerate(conversationId);
-        setMessages(prev => [...prev, assistantMsg]);
-      } catch (err) {
-        console.error('Failed to send message:', err);
-        // Roll back optimistic message on error
-        setMessages(prev => prev.filter(m => m.id !== optimisticUserMsg.id));
-      } finally {
-        setIsLoading(false);
+      return { previousConversation };
+    },
+    onError: (_err, _content, context) => {
+      if (context?.previousConversation) {
+        queryClient.setQueryData(['conversation', conversationId], context.previousConversation);
       }
     },
-    [conversationId, isLoading],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversation', conversationId] });
+      generateMutation.mutate();
+    },
+  });
+
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!content.trim() || addMessageMutation.isPending || generateMutation.isPending) return;
+      return addMessageMutation.mutateAsync(content);
+    },
+    [addMessageMutation, generateMutation],
   );
 
-  return { messages, isLoading, isFetching, sendMessage };
+  return {
+    messages,
+    isLoading: addMessageMutation.isPending || generateMutation.isPending,
+    isFetching: query.isLoading,
+    sendMessage,
+  };
 }

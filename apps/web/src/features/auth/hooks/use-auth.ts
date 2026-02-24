@@ -1,29 +1,37 @@
-'use client';
-
-import { useCallback, useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { loginWithGoogle as apiLoginWithGoogle, logout as apiLogout, getMe } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 export function useAuth() {
+  const queryClient = useQueryClient();
   const { user, status, setUser, setStatus, clearAuth } = useAuthStore();
 
-  useEffect(() => {
-    // Only refresh when the store already thinks the user is authenticated
-    // (hydrated from localStorage). No status flip to 'loading' — avoids
-    // infinite spinner when multiple components use this hook.
-    if (status === 'authenticated') {
-      getMe().then(fullUser => {
-        if (fullUser) {
-          setUser(fullUser);
-        } else {
-          clearAuth();
-        }
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { data: currentUser, isLoading: isAuthLoading } = useQuery({
+    queryKey: ['auth-user'],
+    queryFn: async () => {
+      const fullUser = await getMe();
+      if (fullUser) {
+        setUser(fullUser);
+      } else {
+        clearAuth();
+      }
+      return fullUser;
+    },
+    staleTime: Infinity,
+    enabled: status === 'authenticated',
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: apiLogout,
+    onSuccess: () => {
+      clearAuth();
+      queryClient.setQueryData(['auth-user'], null);
+      window.location.href = '/';
+    },
+  });
 
   const login = useCallback(() => {
     window.location.href = `${API_URL}/api/auth/github`;
@@ -35,16 +43,14 @@ export function useAuth() {
 
   const logout = useCallback(async () => {
     setStatus('loading', 'Signing out...');
-    await apiLogout();
-    clearAuth();
-    window.location.href = '/';
-  }, [clearAuth, setStatus]);
+    await logoutMutation.mutateAsync();
+  }, [logoutMutation, setStatus]);
 
   return {
-    user,
+    user: currentUser ?? user,
     status,
     isAuthenticated: status === 'authenticated',
-    isLoading: status === 'loading',
+    isLoading: status === 'loading' || isAuthLoading || logoutMutation.isPending,
     login,
     loginWithGoogle,
     logout,

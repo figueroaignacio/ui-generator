@@ -1,4 +1,5 @@
 import { geistMono, geistSans } from '@/lib/fonts';
+import { QueryProvider } from '@/providers/query-provider';
 import '@repo/ui/globals.css';
 import type { Metadata } from 'next';
 
@@ -10,7 +11,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <main>{children}</main>
+        <QueryProvider>
+          <main>{children}</main>
+        </QueryProvider>
       </body>
     </html>
   );

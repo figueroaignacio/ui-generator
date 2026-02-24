@@ -85,9 +85,11 @@ export class ConversationsService {
   }
 
   async generateResponse(conversationId: string, userId: string): Promise<Message> {
+    this.logger.log(`[generateResponse] Started for ID: ${conversationId}, User: ${userId}`);
     const conversation = await this.findOne(conversationId, userId);
 
     if (!conversation.messages || conversation.messages.length === 0) {
+      this.logger.warn(`[generateResponse] No messages found for conversation ${conversationId}`);
       throw new NotFoundException('No messages found in this conversation');
     }
 
@@ -97,12 +99,16 @@ export class ConversationsService {
     })) as any[];
 
     try {
-      this.logger.log(`Calling Gemini for conversation ${conversationId}...`);
+      this.logger.log(
+        `[generateResponse] Calling Gemini (gemini-1.5-flash) for conversation ${conversationId}...`,
+      );
       const { text } = await generateText({
-        model: google('gemini-2.5-flash'),
+        model: google('gemini-3-flash-preview'),
         system: SYSTEM_PROMPT,
         messages: history,
       });
+
+      this.logger.log(`[generateResponse] Gemini success, text length: ${text.length}`);
 
       const assistantMessage = this.messageRepo.create({
         role: MessageRole.ASSISTANT,
@@ -111,19 +117,21 @@ export class ConversationsService {
       });
 
       const saved = await this.messageRepo.save(assistantMessage);
-
       await this.conversationRepo.update(conversationId, { updatedAt: new Date() });
 
       return saved;
     } catch (error) {
-      this.logger.error(`Error in generateResponse for conversation ${conversationId}:`, error);
-      throw error;
+      this.logger.error(
+        `[generateResponse] ERROR in generateResponse: ${error.message}`,
+        error.stack,
+      );
+      throw new Error(`Gemini Error: ${error.message}`);
     }
   }
 
   private generateAndSaveTitle(conversation: Conversation, firstMessage: string): void {
     generateText({
-      model: google('gemini-2.5-flash'),
+      model: google('gemini-3-flash-preview'),
       system: SYSTEM_PROMPT,
       prompt: `Generate a concise, descriptive sidebar title (max 6 words, no quotes, no punctuation at the end) that summarizes this chat request: "${firstMessage}"`,
     })
@@ -132,7 +140,9 @@ export class ConversationsService {
         return this.conversationRepo.update(conversation.id, { title });
       })
       .catch(err => {
-        this.logger.error(`Failed to generate title for conversation ${conversation.id}`, err);
+        this.logger.error(
+          `Failed to generate title for conversation ${conversation.id}: ${err.message}`,
+        );
       });
   }
 }

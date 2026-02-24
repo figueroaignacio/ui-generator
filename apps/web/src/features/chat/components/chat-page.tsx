@@ -1,11 +1,12 @@
 'use client';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { addMessage, createConversation } from '../api/conversations.api';
-import { useConversationsStore } from '../store/conversations.store';
+import type { Conversation } from '../types';
 import { ChatHero } from './chat-hero';
 import { ChatInput } from './chat-input';
 import { ChatMessage, type Message } from './chat-message';
@@ -13,9 +14,10 @@ import { ChatSuggestions } from './chat-suggestions';
 
 export function ChatPage() {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const messages: Message[] = useMemo(() => [], []);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const isHero = messages.length === 0;
@@ -24,31 +26,28 @@ export function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const router = useRouter();
-  const addConversation = useConversationsStore(s => s.addConversation);
+  const startChatMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const conversation = await createConversation();
+      queryClient.setQueryData<Conversation[]>(['conversations'], old =>
+        old ? [conversation, ...old] : [conversation],
+      );
+      await addMessage(conversation.id, 'user', content);
+
+      return conversation;
+    },
+    onSuccess: conversation => {
+      router.push(`/chat/c/${conversation.id}`);
+    },
+  });
 
   const handleSubmit = useCallback(async () => {
     const content = input.trim();
-    if (!content || isLoading) return;
+    if (!content || startChatMutation.isPending) return;
 
     setInput('');
-    setIsLoading(true);
-
-    try {
-      // 1. Create a new conversation
-      const conversation = await createConversation();
-      addConversation(conversation);
-
-      // 2. Add the user message
-      await addMessage(conversation.id, 'user', content);
-
-      // 3. Redirect to the active chat
-      router.push(`/chat/c/${conversation.id}`);
-    } catch (err) {
-      console.error('Failed to start chat:', err);
-      setIsLoading(false);
-    }
-  }, [input, isLoading, addConversation, router]);
+    startChatMutation.mutate(content);
+  }, [input, startChatMutation]);
 
   return (
     <div className="flex flex-col h-full">
@@ -69,7 +68,7 @@ export function ChatPage() {
                   value={input}
                   onChange={setInput}
                   onSubmit={handleSubmit}
-                  isLoading={isLoading}
+                  isLoading={startChatMutation.isPending}
                 />
               </div>
               <ChatSuggestions onSelect={setInput} />
@@ -90,7 +89,7 @@ export function ChatPage() {
                   username={user?.username}
                 />
               ))}
-              {isLoading && (
+              {startChatMutation.isPending && (
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -123,8 +122,8 @@ export function ChatPage() {
               value={input}
               onChange={setInput}
               onSubmit={handleSubmit}
-              isLoading={isLoading}
-              onStop={() => setIsLoading(false)}
+              isLoading={startChatMutation.isPending}
+              onStop={() => {}}
             />
           </div>
         </div>

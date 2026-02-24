@@ -14,7 +14,6 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
-  // ── GitHub ──────────────────────────────────────────────────────────────
   @Get('github')
   @UseGuards(GithubAuthGuard)
   githubLogin() {}
@@ -27,7 +26,6 @@ export class AuthController {
     return res.redirect(`${this.configService.get<string>('FRONTEND_URL')}/auth/callback`);
   }
 
-  // ── Google ───────────────────────────────────────────────────────────────
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   googleLogin() {}
