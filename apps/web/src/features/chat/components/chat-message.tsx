@@ -29,7 +29,7 @@ export function ChatMessage({ message, username, avatarUrl, isStreaming }: ChatM
     >
       <div
         className={cn(
-          'max-w-[100%] rounded-2xl text-sm leading-relaxed transition-all duration-500 relative',
+          'max-w-full rounded-2xl text-sm leading-relaxed transition-all duration-500 relative',
           isUser
             ? 'bg-card rounded-tr-sm px-4 py-2.5 shadow-sm ring-1 ring-border/50 w-fit'
             : 'text-foreground px-0',
