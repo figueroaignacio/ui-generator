@@ -1,28 +1,26 @@
 'use client';
 
-import { PanelLeftCloseIcon, PanelLeftOpenIcon } from '@hugeicons/core-free-icons';
-import { HugeiconsIcon } from '@hugeicons/react';
+import { useUIStore } from '@/features/chat/store/ui.store';
 import { cn } from '@repo/ui/lib/cn';
-import { useState } from 'react';
 import { SidebarHeader } from './sidebar-header';
 import { SidebarHistory } from './sidebar-history';
 import { SidebarNav } from './sidebar-nav';
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const { sidebarOpen, toggleSidebar } = useUIStore();
 
   return (
     <>
       <aside
         className={cn(
           'hidden md:flex flex-col h-screen bg-secondary border-r border-border transition-all duration-300 ease-in-out shrink-0',
-          collapsed ? 'w-14' : 'w-80',
+          !sidebarOpen ? 'w-14' : 'w-80',
         )}
       >
-        <SidebarHeader collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} />
+        <SidebarHeader collapsed={!sidebarOpen} onToggle={toggleSidebar} />
         <div className="flex flex-col flex-1 overflow-hidden">
-          <SidebarNav collapsed={collapsed} />
-          {!collapsed && <SidebarHistory />}
+          <SidebarNav collapsed={!sidebarOpen} />
+          {sidebarOpen && <SidebarHistory />}
         </div>
       </aside>
       <MobileSidebar />
@@ -31,43 +29,27 @@ export function Sidebar() {
 }
 
 function MobileSidebar() {
-  const [open, setOpen] = useState(false);
+  const { sidebarOpen, setSidebarOpen } = useUIStore();
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="md:hidden fixed top-3 left-3 z-50 flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary transition-colors"
-        aria-label="Open sidebar"
-      >
-        <HugeiconsIcon icon={PanelLeftCloseIcon} size={18} />
-      </button>
-      {open && (
+      {sidebarOpen && (
         <div
           className="md:hidden fixed inset-0 z-40 bg-background/60 backdrop-blur-xs"
-          onClick={() => setOpen(false)}
+          onClick={() => setSidebarOpen(false)}
         />
       )}
       <aside
         className={cn(
-          'md:hidden fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-secondary border-r border-border',
-          'transition-transform duration-300 ease-in-out',
-          open ? 'translate-x-0' : '-translate-x-full',
+          'md:hidden fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-secondary border-r border-border',
+          'transition-transform duration-300 ease-in-out shadow-2xl',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
-        <div className="flex items-center justify-between px-3 py-3">
-          <span className="font-heading font-semibold text-sm">NachAI</span>
-          <button
-            onClick={() => setOpen(false)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent transition-colors"
-            aria-label="Close sidebar"
-          >
-            <HugeiconsIcon icon={PanelLeftOpenIcon} size={16} />
-          </button>
-        </div>
+        <SidebarHeader collapsed={false} onToggle={() => setSidebarOpen(false)} />
         <div className="flex flex-col flex-1 overflow-hidden">
-          <SidebarNav collapsed={false} onAction={() => setOpen(false)} />
-          <SidebarHistory onAction={() => setOpen(false)} />
+          <SidebarNav collapsed={false} onAction={() => setSidebarOpen(false)} />
+          <SidebarHistory onAction={() => setSidebarOpen(false)} />
         </div>
       </aside>
     </>

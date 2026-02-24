@@ -28,9 +28,9 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
   }
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
-      <p className="px-4 pt-4 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-        Recent
+    <div className="flex flex-col flex-1 overflow-hidden mt-4">
+      <p className="px-5 pb-2 text-xs font-semibold text-foreground/70 uppercase tracking-wider">
+        Conversaciones
       </p>
       <ul className="flex flex-col overflow-y-auto px-2 pb-2 gap-0.5">
         {conversations.map(chat => {
