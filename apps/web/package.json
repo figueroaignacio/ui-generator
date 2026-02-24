@@ -13,6 +13,7 @@
     "@hugeicons/react": "^1.1.5",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.21",
+    "ai": "^6.0.97",
     "highlight.js": "^11.11.1",
     "lucide-react": "^0.575.0",
     "motion": "^12.34.2",

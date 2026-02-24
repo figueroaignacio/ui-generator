@@ -5,7 +5,6 @@ import { ChatInput } from '@/features/chat/components/chat-input';
 import { ChatMessage } from '@/features/chat/components/chat-message';
 import { ChatSkeleton } from '@/features/chat/components/chat-skeleton';
 import { useConversation } from '@/features/chat/hooks/use-conversation';
-import { motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
 interface ConversationPageProps {
@@ -31,7 +30,6 @@ export function ConversationPage({ id }: ConversationPageProps) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Message list */}
       <div className="flex-1 overflow-y-auto">
         {isFetching ? (
           <ChatSkeleton />
@@ -41,23 +39,13 @@ export function ConversationPage({ id }: ConversationPageProps) {
               <ChatMessage
                 key={msg.id}
                 message={{ id: msg.id, role: msg.role, content: msg.content }}
-                avatarUrl={user?.avatarUrl ?? undefined}
-                username={user?.username}
+                avatarUrl={msg.role === 'user' ? (user?.avatarUrl ?? undefined) : undefined}
+                username={msg.role === 'user' ? user?.username : 'NachAI'}
+                isStreaming={msg.id === 'streaming'}
               />
             ))}
 
-            {/* Typing indicator */}
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-1 text-muted-foreground text-sm font-medium animate-pulse py-2 px-1"
-              >
-                Thinking...
-              </motion.div>
-            )}
-
-            <div ref={bottomRef} />
+            <div ref={bottomRef} className="h-4" />
           </div>
         )}
       </div>

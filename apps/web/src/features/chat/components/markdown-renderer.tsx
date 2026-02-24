@@ -9,11 +9,12 @@ import { CodeBlock } from './code-block';
 interface MarkdownRendererProps {
   content: string;
   className?: string;
+  isStreaming?: boolean;
 }
 
-export function MarkdownRenderer({ content, className }: MarkdownRendererProps) {
+export function MarkdownRenderer({ content, className, isStreaming }: MarkdownRendererProps) {
   return (
-    <div className={cn('markdown-content', className)}>
+    <div className={cn('markdown-content space-y-4 relative', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]}
@@ -119,6 +120,14 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
       >
         {content}
       </ReactMarkdown>
+      {isStreaming && !content && (
+        <div
+          className="flex items-center gap-2 py-2 px-1 text-muted-foreground/80 font-medium text-sm animate-pulse"
+          aria-label="Thinking..."
+        >
+          <span className="italic tracking-tight">Thinking...</span>
+        </div>
+      )}
     </div>
   );
 }

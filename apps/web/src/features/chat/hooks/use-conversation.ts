@@ -1,14 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   addMessage as apiAddMessage,
-  generateResponse as apiGenerate,
+  generateResponseStream as apiGenerateStream,
   getConversation,
 } from '../api/conversations.api';
 import type { Conversation, ConversationWithMessages, Message } from '../types';
 
 export function useConversation(conversationId: string) {
   const queryClient = useQueryClient();
+  const [streamingMessage, setStreamingMessage] = useState<string | null>(null);
 
   const query = useQuery({
     queryKey: ['conversation', conversationId],
@@ -17,15 +18,58 @@ export function useConversation(conversationId: string) {
   });
 
   const conversation = query.data;
+
   const generateMutation = useMutation({
-    mutationFn: () => apiGenerate(conversationId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['conversation', conversationId] });
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    mutationFn: async () => {
+      setStreamingMessage('');
+      const response = await apiGenerateStream(conversationId);
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No reader available');
+
+      const decoder = new TextDecoder();
+      let done = false;
+      let accumulatedText = '';
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunk = decoder.decode(value, { stream: true });
+
+        accumulatedText += chunk;
+        setStreamingMessage(accumulatedText);
+      }
+
+      return accumulatedText;
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['conversation', conversationId] }),
+        queryClient.invalidateQueries({ queryKey: ['conversations'] }),
+      ]);
+      setStreamingMessage(null);
+    },
+    onError: () => {
+      setStreamingMessage(null);
     },
   });
 
-  const messages = useMemo(() => conversation?.messages ?? [], [conversation]);
+  const messages = useMemo(() => {
+    const baseMessages = conversation?.messages ?? [];
+    if (streamingMessage !== null) {
+      return [
+        ...baseMessages,
+        {
+          id: 'streaming',
+          role: 'assistant',
+          content: streamingMessage,
+          conversationId,
+          createdAt: new Date().toISOString(),
+        } as Message,
+      ];
+    }
+    return baseMessages;
+  }, [conversation, streamingMessage, conversationId]);
 
   useEffect(() => {
     if (!conversation) return;
@@ -85,6 +129,7 @@ export function useConversation(conversationId: string) {
       }
     },
     onSuccess: () => {
+      setStreamingMessage('');
       queryClient.invalidateQueries({ queryKey: ['conversation', conversationId] });
       generateMutation.mutate();
     },

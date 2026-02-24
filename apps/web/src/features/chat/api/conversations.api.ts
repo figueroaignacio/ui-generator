@@ -59,6 +59,12 @@ export async function generateResponse(conversationId: string): Promise<Message>
   return res.json();
 }
 
+export async function generateResponseStream(conversationId: string): Promise<Response> {
+  return fetchWithCredentials(`/api/conversations/${conversationId}/stream`, {
+    method: 'POST',
+  });
+}
+
 export async function deleteConversation(id: string): Promise<void> {
   await fetchWithCredentials(`/api/conversations/${id}`, { method: 'DELETE' });
 }

@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Post,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -48,6 +49,16 @@ export class ConversationsController {
   @Post(':id/generate')
   generate(@Request() req, @Param('id', ParseUUIDPipe) id: string) {
     return this.conversationsService.generateResponse(id, req.user.id);
+  }
+
+  @Post(':id/stream')
+  async generateStream(
+    @Request() req,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res() res: Response,
+  ) {
+    const result = await this.conversationsService.generateStreamResponse(id, req.user.id);
+    return result.pipeTextStreamToResponse(res);
   }
 
   @Delete(':id')

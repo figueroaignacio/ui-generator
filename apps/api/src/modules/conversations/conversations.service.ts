@@ -1,7 +1,7 @@
 import { google } from '@ai-sdk/google';
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { generateText } from 'ai';
+import { generateText, streamText } from 'ai';
 import { Repository } from 'typeorm';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -127,6 +127,38 @@ export class ConversationsService {
       );
       throw new Error(`Gemini Error: ${error.message}`);
     }
+  }
+
+  async generateStreamResponse(conversationId: string, userId: string): Promise<any> {
+    this.logger.log(`[generateStreamResponse] Started for ID: ${conversationId}, User: ${userId}`);
+    const conversation = await this.findOne(conversationId, userId);
+
+    if (!conversation.messages || conversation.messages.length === 0) {
+      throw new NotFoundException('No messages found in this conversation');
+    }
+
+    const history = conversation.messages.map(msg => ({
+      role: msg.role as 'user' | 'assistant',
+      content: msg.content,
+    })) as any[];
+
+    const result = streamText({
+      model: google('gemini-3-flash-preview'),
+      system: SYSTEM_PROMPT,
+      messages: history,
+      onFinish: async ({ text }) => {
+        this.logger.log(`[generateStreamResponse] Finished, saving message...`);
+        const assistantMessage = this.messageRepo.create({
+          role: MessageRole.ASSISTANT,
+          content: text,
+          conversationId,
+        });
+        await this.messageRepo.save(assistantMessage);
+        await this.conversationRepo.update(conversationId, { updatedAt: new Date() });
+      },
+    });
+
+    return result;
   }
 
   private generateAndSaveTitle(conversation: Conversation, firstMessage: string): void {
