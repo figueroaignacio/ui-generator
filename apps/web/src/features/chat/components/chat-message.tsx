@@ -1,7 +1,5 @@
 'use client';
 
-import { SparklesIcon } from '@hugeicons/core-free-icons';
-import { HugeiconsIcon } from '@hugeicons/react';
 import { cn } from '@repo/ui/lib/cn';
 import { motion } from 'motion/react';
 
@@ -27,17 +25,10 @@ export function ChatMessage({ message, avatarUrl, username }: ChatMessageProps) 
       transition={{ duration: 0.25, ease: 'easeOut' }}
       className={cn('flex gap-3 w-full', isUser ? 'justify-end' : 'justify-start')}
     >
-      {!isUser && (
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary mt-0.5">
-          <HugeiconsIcon icon={SparklesIcon} size={14} />
-        </div>
-      )}
       <div
         className={cn(
-          'max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
-          isUser
-            ? 'bg-primary text-primary-foreground rounded-br-sm'
-            : 'bg-card border border-border text-foreground rounded-bl-sm',
+          'max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
+          isUser ? 'bg-primary text-primary-foreground rounded-br-sm' : 'px-0',
         )}
       >
         <p className="whitespace-pre-wrap wrap-break-word">{message.content}</p>
