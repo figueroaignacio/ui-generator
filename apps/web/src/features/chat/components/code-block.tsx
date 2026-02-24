@@ -24,9 +24,9 @@ export function CodeBlock({ language, value, children }: CodeBlockProps) {
   };
 
   return (
-    <div className="group relative my-4 overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-md">
-      <div className="sticky top-0 z-10 flex h-10 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur-md">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/90">
+    <div className="group relative my-4 overflow-hidden rounded-xl border border-border bg-[#1e1f20] shadow-sm transition-all hover:shadow-md">
+      <div className="sticky top-0 z-10 flex h-9 items-center justify-between border-b border-border bg-[#1e1f20]/95 px-4 backdrop-blur-md">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
           {language || 'code'}
         </span>
         <button onClick={copyToClipboard} className="active:scale-95" aria-label="Copy code">
