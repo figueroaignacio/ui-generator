@@ -5,6 +5,7 @@ import { ChatInput } from '@/features/chat/components/chat-input';
 import { ChatMessage } from '@/features/chat/components/chat-message';
 import { ChatSkeleton } from '@/features/chat/components/chat-skeleton';
 import { useConversation } from '@/features/chat/hooks/use-conversation';
+import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
 interface ConversationPageProps {
@@ -31,23 +32,31 @@ export function ConversationPage({ id }: ConversationPageProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
-        {isFetching ? (
-          <ChatSkeleton />
-        ) : (
-          <div className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full">
-            {messages.map(msg => (
-              <ChatMessage
-                key={msg.id}
-                message={{ id: msg.id, role: msg.role, content: msg.content }}
-                avatarUrl={msg.role === 'user' ? (user?.avatarUrl ?? undefined) : undefined}
-                username={msg.role === 'user' ? user?.username : 'NachAI'}
-                isStreaming={msg.id === 'streaming'}
-              />
-            ))}
+        <AnimatePresence mode="wait">
+          {isFetching ? (
+            <ChatSkeleton key="skeleton" />
+          ) : (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full"
+            >
+              {messages.map(msg => (
+                <ChatMessage
+                  key={msg.id}
+                  message={{ id: msg.id, role: msg.role, content: msg.content }}
+                  avatarUrl={msg.role === 'user' ? (user?.avatarUrl ?? undefined) : undefined}
+                  username={msg.role === 'user' ? user?.username : 'NachAI'}
+                  isStreaming={msg.id === 'streaming'}
+                />
+              ))}
 
-            <div ref={bottomRef} className="h-4" />
-          </div>
-        )}
+              <div ref={bottomRef} className="h-4" />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <div className="shrink-0 px-4 py-3">
         <div className="max-w-3xl mx-auto">

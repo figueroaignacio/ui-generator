@@ -1,24 +1,60 @@
 'use client';
 
+import { motion } from 'motion/react';
+
 export function ChatSkeleton() {
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full">
-      {[...Array(3)].map((_, i) => (
-        <div
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="flex flex-col gap-8 px-4 py-8 max-w-3xl mx-auto w-full"
+    >
+      {[...Array(4)].map((_, i) => (
+        <motion.div
           key={i}
-          className={`flex gap-3 items-start ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
+          variants={item}
+          className={`flex gap-4 items-start ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
         >
-          <div className="h-8 w-8 rounded-full bg-muted/60 shrink-0" />
+          {/* Avatar Skeleton */}
+          <div className="h-9 w-9 rounded-full bg-secondary shrink-0 relative overflow-hidden">
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-foreground/5 to-transparent animate-shimmer -translate-x-full" />
+          </div>
+
+          {/* Message Content Skeleton */}
           <div
-            className={`flex flex-col gap-2 max-w-[80%] ${i % 2 === 0 ? 'items-start' : 'items-end'}`}
+            className={`flex flex-col gap-2.5 max-w-[80%] ${i % 2 === 0 ? 'items-start' : 'items-end'}`}
           >
-            <div className="h-10 rounded-2xl bg-muted/40 animate-pulse w-48" />
+            <div
+              className={`h-12 rounded-2xl bg-secondary relative overflow-hidden ${
+                i % 2 === 0 ? 'rounded-tl-sm w-64' : 'rounded-tr-sm w-48'
+              }`}
+            >
+              <div className="absolute inset-0 bg-linear-to-r from-transparent via-foreground/5 to-transparent animate-shimmer -translate-x-full" />
+            </div>
             {i % 3 === 0 && (
-              <div className="h-16 rounded-2xl bg-muted/30 animate-pulse w-[200px]" />
+              <div className="h-20 rounded-2xl bg-secondary/60 relative overflow-hidden w-[320px] max-w-full">
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-foreground/5 to-transparent animate-shimmer -translate-x-full" />
+              </div>
             )}
           </div>
-        </div>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

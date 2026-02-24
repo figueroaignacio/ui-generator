@@ -10,7 +10,7 @@ interface SidebarHistoryProps {
 }
 
 export function SidebarHistory({ onAction }: SidebarHistoryProps) {
-  const { conversations, deleteConversation } = useConversations();
+  const { conversations, isLoading, deleteConversation } = useConversations();
   const pathname = usePathname();
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
@@ -23,8 +23,20 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
     }
   };
 
-  if (conversations.length === 0) {
-    return <div className="px-4 py-4 text-xs text-muted-foreground">No conversations yet.</div>;
+  if (isLoading && conversations.length === 0) {
+    return (
+      <div className="flex flex-col flex-1 overflow-hidden mt-6 px-4 gap-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex flex-col gap-2">
+            <div className="h-4 w-full bg-secondary rounded-md animate-pulse" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!isLoading && conversations.length === 0) {
+    return <div className="px-5 py-4 text-xs text-muted-foreground italic">No conver...</div>;
   }
 
   return (
