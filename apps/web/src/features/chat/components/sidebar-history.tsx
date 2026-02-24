@@ -5,7 +5,11 @@ import { cn } from '@repo/ui/lib/cn';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export function SidebarHistory() {
+interface SidebarHistoryProps {
+  onAction?: () => void;
+}
+
+export function SidebarHistory({ onAction }: SidebarHistoryProps) {
   const { conversations } = useConversations();
   const pathname = usePathname();
 
@@ -26,14 +30,15 @@ export function SidebarHistory() {
             <li key={chat.id}>
               <Link
                 href={href}
+                onClick={onAction}
                 className={cn(
                   'flex items-center gap-2.5 w-full rounded-lg px-2 py-2 text-sm transition-colors text-left',
                   isActive
-                    ? 'bg-accent/80 text-foreground font-medium'
-                    : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                    ? 'bg-card text-foreground font-medium'
+                    : 'text-muted-foreground hover:bg-card hover:text-foreground',
                 )}
               >
-                <span className="truncate">{chat.title ?? 'New conversation'}</span>
+                <span className="truncate">{chat.title ?? 'Thinking in a title...'}</span>
               </Link>
             </li>
           );

@@ -13,13 +13,22 @@ interface MarkdownRendererProps {
 
 export function MarkdownRenderer({ content, className }: MarkdownRendererProps) {
   return (
-    <div className={cn('markdown-content space-y-4', className)}>
+    <div className={cn('markdown-content', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]}
         components={{
           // Use our custom CodeBlock for fenced code blocks
-          code({ node, inline, className, children, ...props }: any) {
+          code({
+            inline,
+            className,
+            children,
+            ...props
+          }: {
+            inline?: boolean;
+            className?: string;
+            children?: React.ReactNode;
+          }) {
             const match = /language-(\w+)/.exec(className || '');
             const value = String(children).replace(/\n$/, '');
 
@@ -64,7 +73,7 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
             </h3>
           ),
           p: ({ children }) => (
-            <p className="text-sm leading-relaxed text-foreground/90 my-3 last:mb-0">{children}</p>
+            <p className="text-sm leading-relaxed text-foreground/90 mb-3 last:mb-0">{children}</p>
           ),
           ul: ({ children }) => (
             <ul className="my-4 ml-6 list-disc [&>li]:mt-2 text-sm">{children}</ul>

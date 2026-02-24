@@ -42,7 +42,7 @@ export function ChatInput({
   const canSubmit = value.trim().length > 0 && !isLoading;
 
   return (
-    <div className="w-full rounded-2xl border border-border bg-card shadow-sm focus-within:ring-2 focus-within:ring-primary/20 transition-shadow">
+    <div className="w-full rounded-2xl border border-border bg-secondary shadow-sm focus-within:ring-2 focus-within:ring-primary/20 transition-shadow">
       <textarea
         ref={textareaRef}
         value={value}

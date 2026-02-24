@@ -15,7 +15,7 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          'hidden md:flex flex-col h-screen bg-card border-r border-border transition-all duration-300 ease-in-out shrink-0',
+          'hidden md:flex flex-col h-screen bg-secondary border-r border-border transition-all duration-300 ease-in-out shrink-0',
           collapsed ? 'w-14' : 'w-80',
         )}
       >
@@ -50,7 +50,7 @@ function MobileSidebar() {
       )}
       <aside
         className={cn(
-          'md:hidden fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-card border-r border-border',
+          'md:hidden fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-secondary border-r border-border',
           'transition-transform duration-300 ease-in-out',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
@@ -66,8 +66,8 @@ function MobileSidebar() {
           </button>
         </div>
         <div className="flex flex-col flex-1 overflow-hidden">
-          <SidebarNav collapsed={false} />
-          <SidebarHistory />
+          <SidebarNav collapsed={false} onAction={() => setOpen(false)} />
+          <SidebarHistory onAction={() => setOpen(false)} />
         </div>
       </aside>
     </>

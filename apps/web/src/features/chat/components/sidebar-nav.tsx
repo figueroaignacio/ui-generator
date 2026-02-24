@@ -7,14 +7,24 @@ import { useRouter } from 'next/navigation';
 
 interface SidebarNavProps {
   collapsed: boolean;
+  onAction?: () => void;
 }
 
-export function SidebarNav({ collapsed }: SidebarNavProps) {
+export function SidebarNav({ collapsed, onAction }: SidebarNavProps) {
   const router = useRouter();
 
+  const handleAction = (cb: () => void) => {
+    cb();
+    onAction?.();
+  };
+
   const items = [
-    { icon: Add01Icon, label: 'New chat', onClick: () => router.push('/chat/new') },
-    { icon: Search01Icon, label: 'Search', onClick: () => {} },
+    {
+      icon: Add01Icon,
+      label: 'New chat',
+      onClick: () => handleAction(() => router.push('/chat/new')),
+    },
+    { icon: Search01Icon, label: 'Search', onClick: () => handleAction(() => {}) },
   ];
 
   return (
@@ -26,7 +36,7 @@ export function SidebarNav({ collapsed }: SidebarNavProps) {
           title={collapsed ? label : undefined}
           className={cn(
             'flex items-center gap-3 rounded-lg px-2 py-2 text-sm text-muted-foreground',
-            'hover:bg-accent hover:text-foreground transition-colors w-full text-left',
+            'hover:bg-card hover:text-foreground transition-colors w-full text-left',
             collapsed && 'justify-center',
           )}
         >
