@@ -29,20 +29,14 @@ export function CodeBlock({ language, value, children }: CodeBlockProps) {
         <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/90">
           {language || 'code'}
         </span>
-        <button
-          onClick={copyToClipboard}
-          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary active:scale-95"
-          aria-label="Copy code"
-        >
+        <button onClick={copyToClipboard} className="active:scale-95" aria-label="Copy code">
           {copied ? (
             <>
               <CheckIcon className="h-3.5 w-3.5 text-green-500" />
-              <span className="text-green-500 font-bold">Copied!</span>
             </>
           ) : (
             <>
               <CopyIcon className="h-3.5 w-3.5" />
-              <span>Copy</span>
             </>
           )}
         </button>
@@ -50,11 +44,11 @@ export function CodeBlock({ language, value, children }: CodeBlockProps) {
       <div className="max-h-[600px] overflow-auto">
         <pre
           className={cn(
-            'p-4 text-sm leading-relaxed scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent',
+            'p-4 text-xs leading-relaxed scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent font-code',
             language ? `hljs language-${language}` : 'hljs',
           )}
         >
-          <code className="block w-full">{children || value}</code>
+          <code className="block w-full font-code">{children || value}</code>
         </pre>
       </div>
     </div>

@@ -33,7 +33,6 @@ export function MarkdownRenderer({ content, className, isStreaming }: MarkdownRe
             const value = String(children).replace(/\n$/, '');
             const isMultiline = value.includes('\n');
 
-            // If it's a block (not inline), but has a language or is multiline, use CodeBlock
             if (!inline && (match || isMultiline)) {
               return (
                 <CodeBlock language={match?.[1]} value={value}>
@@ -42,11 +41,10 @@ export function MarkdownRenderer({ content, className, isStreaming }: MarkdownRe
               );
             }
 
-            // Otherwise, render as a nice "mini badge" inline code
             return (
               <code
                 className={cn(
-                  'relative rounded-md bg-muted/70 border border-border/50 px-1.5 py-0.5 font-mono text-[0.85em] font-semibold text-foreground break-all',
+                  'relative rounded-md bg-muted/70 border border-border/50 px-1.5 py-0.5 font-jetbrains text-[0.85em] font-semibold text-foreground break-all',
                   className,
                 )}
                 {...props}
@@ -55,7 +53,6 @@ export function MarkdownRenderer({ content, className, isStreaming }: MarkdownRe
               </code>
             );
           },
-          // Custom styling for other elements
           h1: ({ children }) => (
             <h1 className="text-xl font-bold tracking-tight text-foreground mt-6 mb-3 first:mt-0">
               {children}
