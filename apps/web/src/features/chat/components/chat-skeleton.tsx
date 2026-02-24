@@ -8,10 +8,7 @@ export function ChatSkeleton() {
           key={i}
           className={`flex gap-3 items-start ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
         >
-          {/* Avatar Skeleton */}
           <div className="h-8 w-8 rounded-full bg-muted/60 shrink-0" />
-
-          {/* Message Skeleton */}
           <div
             className={`flex flex-col gap-2 max-w-[80%] ${i % 2 === 0 ? 'items-start' : 'items-end'}`}
           >

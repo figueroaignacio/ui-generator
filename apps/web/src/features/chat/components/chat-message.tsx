@@ -2,6 +2,7 @@
 
 import { cn } from '@repo/ui/lib/cn';
 import { motion } from 'motion/react';
+import { MarkdownRenderer } from './markdown-renderer';
 
 export interface Message {
   id: string;
@@ -15,7 +16,7 @@ interface ChatMessageProps {
   username?: string;
 }
 
-export function ChatMessage({ message, avatarUrl, username }: ChatMessageProps) {
+export function ChatMessage({ message, username, avatarUrl }: ChatMessageProps) {
   const isUser = message.role === 'user';
 
   return (
@@ -27,11 +28,11 @@ export function ChatMessage({ message, avatarUrl, username }: ChatMessageProps) 
     >
       <div
         className={cn(
-          'max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
-          isUser ? 'bg-primary text-primary-foreground rounded-br-sm' : 'px-0',
+          'max-w-full rounded-2xl px-4 py-3 text-sm leading-relaxed',
+          isUser ? 'bg-secondary text-primary-foreground rounded-br-sm' : 'px-0',
         )}
       >
-        <p className="whitespace-pre-wrap wrap-break-word">{message.content}</p>
+        <MarkdownRenderer content={message.content} />
       </div>
       {isUser && (
         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full overflow-hidden mt-0.5 ring-2 ring-border">

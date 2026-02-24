@@ -91,23 +91,11 @@ export function ChatPage() {
               ))}
               {startChatMutation.isPending && (
                 <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-3 items-start"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center gap-1 text-muted-foreground text-sm font-medium animate-pulse py-2 px-1"
                 >
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <span className="text-xs">✦</span>
-                  </div>
-                  <div className="flex gap-1 items-center bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-3 h-10">
-                    {[0, 1, 2].map(i => (
-                      <motion.span
-                        key={i}
-                        className="w-1.5 h-1.5 rounded-full bg-muted-foreground"
-                        animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
-                        transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
-                      />
-                    ))}
-                  </div>
+                  Thinking...
                 </motion.div>
               )}
               <div ref={bottomRef} />

@@ -34,6 +34,7 @@ When generating a component, always output:
 - Do NOT import from \`lucide-react\`, \`heroicons\`, or any other icon library
 - Do NOT use \`styled-components\` or CSS Modules
 - If the user's request is ambiguous, make reasonable assumptions and state them clearly before the code
+- ALWAYS respond using **well-formatted Markdown**. Use headings for sections, lists for steps, and fenced code blocks with language identifiers for code.
 `.trim();
 
 // I created this prompt to use later.
