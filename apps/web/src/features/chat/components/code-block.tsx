@@ -24,8 +24,7 @@ export function CodeBlock({ language, value, children }: CodeBlockProps) {
   };
 
   return (
-    <div className="group relative my-6 overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-md">
-      {/* Header / Sticky Copy Button area */}
+    <div className="group relative my-4 overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-md">
       <div className="sticky top-0 z-10 flex h-10 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur-md">
         <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/90">
           {language || 'code'}
@@ -48,8 +47,6 @@ export function CodeBlock({ language, value, children }: CodeBlockProps) {
           )}
         </button>
       </div>
-
-      {/* Code Content */}
       <div className="max-h-[600px] overflow-auto">
         <pre
           className={cn(

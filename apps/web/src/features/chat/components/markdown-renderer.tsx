@@ -18,7 +18,6 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]}
         components={{
-          // Use our custom CodeBlock for fenced code blocks
           code({
             inline,
             className,
@@ -31,23 +30,22 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
           }) {
             const match = /language-(\w+)/.exec(className || '');
             const value = String(children).replace(/\n$/, '');
+            const isMultiline = value.includes('\n');
 
-            if (!inline && match) {
+            // If it's a block (not inline), but has a language or is multiline, use CodeBlock
+            if (!inline && (match || isMultiline)) {
               return (
-                <CodeBlock language={match[1]} value={value}>
+                <CodeBlock language={match?.[1]} value={value}>
                   {children}
                 </CodeBlock>
               );
             }
 
-            if (!inline && !match) {
-              return <CodeBlock value={value}>{children}</CodeBlock>;
-            }
-
+            // Otherwise, render as a nice "mini badge" inline code
             return (
               <code
                 className={cn(
-                  'rounded bg-muted px-1.5 py-0.5 font-mono text-sm leading-none text-foreground',
+                  'relative rounded-md bg-muted/70 border border-border/50 px-1.5 py-0.5 font-mono text-[0.85em] font-semibold text-foreground break-all',
                   className,
                 )}
                 {...props}
@@ -58,32 +56,37 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
           },
           // Custom styling for other elements
           h1: ({ children }) => (
-            <h1 className="text-2xl font-bold tracking-tight text-foreground mt-8 mb-4">
+            <h1 className="text-xl font-bold tracking-tight text-foreground mt-6 mb-3 first:mt-0">
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-xl font-semibold tracking-tight text-foreground mt-6 mb-3">
+            <h2 className="text-lg font-bold tracking-tight text-foreground mt-5 mb-2 first:mt-0">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-lg font-semibold tracking-tight text-foreground mt-5 mb-2">
+            <h3 className="text-base font-bold tracking-tight text-foreground mt-4 mb-1.5 first:mt-0">
               {children}
             </h3>
           ),
           p: ({ children }) => (
-            <p className="text-sm leading-relaxed text-foreground/90 mb-3 last:mb-0">{children}</p>
+            <p className="text-sm leading-relaxed text-foreground/90 mb-4 last:mb-0">{children}</p>
           ),
           ul: ({ children }) => (
-            <ul className="my-4 ml-6 list-disc [&>li]:mt-2 text-sm">{children}</ul>
+            <ul className="mb-4 ml-5 list-disc [&>li]:mt-1 text-sm text-foreground/90 last:mb-0">
+              {children}
+            </ul>
           ),
           ol: ({ children }) => (
-            <ol className="my-4 ml-6 list-decimal [&>li]:mt-2 text-sm">{children}</ol>
+            <ol className="mb-4 ml-5 list-decimal [&>li]:mt-1 text-sm text-foreground/90 last:mb-0">
+              {children}
+            </ol>
           ),
-          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+          li: ({ children }) => <li className="pl-1 leading-relaxed">{children}</li>,
+          hr: () => <hr className="my-6 border-border/50" />,
           blockquote: ({ children }) => (
-            <blockquote className="mt-4 border-l-4 border-primary/30 pl-4 italic text-muted-foreground">
+            <blockquote className="my-4 border-l-2 border-primary/50 pl-4 italic text-muted-foreground bg-muted/20 py-1.5 rounded-r-lg">
               {children}
             </blockquote>
           ),
@@ -92,23 +95,23 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-primary underline underline-offset-4 hover:transition-colors hover:text-primary/80"
+              className="font-medium text-primary underline underline-offset-4 decoration-primary/30 hover:decoration-primary transition-colors"
             >
               {children}
             </a>
           ),
           table: ({ children }) => (
-            <div className="my-6 w-full overflow-y-auto rounded-lg border border-border">
+            <div className="my-4 w-full overflow-y-auto rounded-lg border border-border shadow-xs">
               <table className="w-full border-collapse text-sm">{children}</table>
             </div>
           ),
           th: ({ children }) => (
-            <th className="border-b border-border bg-muted/50 px-4 py-3 text-left font-semibold text-foreground">
+            <th className="border-b border-border bg-muted/50 px-4 py-2 text-left font-semibold text-foreground text-xs uppercase tracking-wider">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="border-b border-border px-4 py-3 text-left text-foreground/80">
+            <td className="border-b border-border px-4 py-2 text-left text-foreground/80">
               {children}
             </td>
           ),
