@@ -44,7 +44,7 @@ export function MarkdownRenderer({ content, className, isStreaming }: MarkdownRe
             return (
               <code
                 className={cn(
-                  'relative rounded-lg bg-muted/70 border border-border/50 px-2 py-1 font-jetbrains text-[0.85em] font-semibold text-foreground break-all',
+                  'relative rounded-lg bg-secondary/50 border border-border/50 px-2 py-1 font-jetbrains text-[0.85em] font-semibold text-foreground break-all',
                   className,
                 )}
                 {...props}
