@@ -16,7 +16,7 @@ export function Sidebar() {
       <aside
         className={cn(
           'hidden md:flex flex-col h-screen bg-card border-r border-border transition-all duration-300 ease-in-out shrink-0',
-          collapsed ? 'w-14' : 'w-64',
+          collapsed ? 'w-14' : 'w-80',
         )}
       >
         <SidebarHeader collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} />
