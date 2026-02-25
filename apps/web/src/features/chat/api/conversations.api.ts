@@ -59,9 +59,13 @@ export async function generateResponse(conversationId: string): Promise<Message>
   return res.json();
 }
 
-export async function generateResponseStream(conversationId: string): Promise<Response> {
+export async function generateResponseStream(
+  conversationId: string,
+  model = 'groq/llama-3.3-70b-versatile',
+): Promise<Response> {
   return fetchWithCredentials(`/api/conversations/${conversationId}/stream`, {
     method: 'POST',
+    body: JSON.stringify({ model }),
   });
 }
 

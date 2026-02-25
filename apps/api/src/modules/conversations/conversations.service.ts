@@ -1,4 +1,5 @@
 import { google } from '@ai-sdk/google';
+import { createGroq } from '@ai-sdk/groq';
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generateText, streamText } from 'ai';
@@ -67,7 +68,6 @@ export class ConversationsService {
     });
     const savedMessage = await this.messageRepo.save(message);
 
-    // This is for generating a title based on the first user message
     if (dto.role === MessageRole.USER && !conversation.title) {
       this.generateAndSaveTitle(conversation, dto.content);
     }
@@ -98,12 +98,14 @@ export class ConversationsService {
       content: msg.content,
     })) as any[];
 
+    const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
+
     try {
       this.logger.log(
-        `[generateResponse] Calling Gemini (gemini-1.5-flash) for conversation ${conversationId}...`,
+        `[generateResponse] Calling Groq (llama-3.3-70b-versatile) for conversation ${conversationId}...`,
       );
       const { text } = await generateText({
-        model: google('gemini-3-flash-preview'),
+        model: groq('llama-3.3-70b-versatile'),
         system: SYSTEM_PROMPT,
         messages: history,
       });
@@ -129,7 +131,19 @@ export class ConversationsService {
     }
   }
 
-  async generateStreamResponse(conversationId: string, userId: string): Promise<any> {
+  private resolveModel(model: string) {
+    const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
+    if (model.startsWith('groq/')) return groq(model.replace('groq/', ''));
+    if (model.startsWith('google/')) return google(model.replace('google/', ''));
+    // default fallback
+    return groq('llama-3.3-70b-versatile');
+  }
+
+  async generateStreamResponse(
+    conversationId: string,
+    userId: string,
+    model = 'groq/llama-3.3-70b-versatile',
+  ): Promise<any> {
     this.logger.log(`[generateStreamResponse] Started for ID: ${conversationId}, User: ${userId}`);
     const conversation = await this.findOne(conversationId, userId);
 
@@ -143,7 +157,7 @@ export class ConversationsService {
     })) as any[];
 
     const result = streamText({
-      model: google('gemini-3-flash-preview'),
+      model: this.resolveModel(model),
       system: SYSTEM_PROMPT,
       messages: history,
       onFinish: async ({ text }) => {
@@ -163,7 +177,7 @@ export class ConversationsService {
 
   private generateAndSaveTitle(conversation: Conversation, firstMessage: string): void {
     generateText({
-      model: google('gemini-3-flash-preview'),
+      model: this.resolveModel('groq/llama-3.3-70b-versatile'),
       system: SYSTEM_PROMPT,
       prompt: `Generate a concise, descriptive sidebar title (max 6 words, no quotes, no punctuation at the end) that summarizes this chat request: "${firstMessage}"`,
     })

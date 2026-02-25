@@ -4,7 +4,9 @@ import { useUIStore } from '@/features/chat/store/ui.store';
 import { PanelRightIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import Link from 'next/link';
+import { ModelSelector } from './model-selector';
 import { UserMenu } from './user-menu';
+
 export function ChatHeader() {
   const { toggleSidebar } = useUIStore();
 
@@ -23,6 +25,7 @@ export function ChatHeader() {
             NachAI
           </span>
         </Link>
+        <ModelSelector />
       </div>
       <div className="flex items-center gap-4 px-1">
         <UserMenu />

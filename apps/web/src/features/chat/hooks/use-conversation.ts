@@ -5,10 +5,12 @@ import {
   generateResponseStream as apiGenerateStream,
   getConversation,
 } from '../api/conversations.api';
+import { useModelStore } from '../store/model.store';
 import type { Conversation, ConversationWithMessages, Message } from '../types';
 
 export function useConversation(conversationId: string) {
   const queryClient = useQueryClient();
+  const { selectedModelId } = useModelStore();
   const [streamingMessage, setStreamingMessage] = useState<string | null>(null);
 
   const query = useQuery({
@@ -22,7 +24,7 @@ export function useConversation(conversationId: string) {
   const generateMutation = useMutation({
     mutationFn: async () => {
       setStreamingMessage('');
-      const response = await apiGenerateStream(conversationId);
+      const response = await apiGenerateStream(conversationId, selectedModelId);
 
       const reader = response.body?.getReader();
       if (!reader) throw new Error('No reader available');
