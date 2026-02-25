@@ -31,7 +31,7 @@ export function SearchView() {
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-3xl mx-auto">
-      <h1 className="text-4xl font-normal text-foreground">Search</h1>
+      <h1 className="text-4xl font-normal text-foreground">Find Your Ideas</h1>
 
       <div className="relative group">
         <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">

@@ -1,8 +1,8 @@
 import { AuthDialogWrapper } from '@/features/auth/components/auth-dialog-wrapper';
 import { geistMono, geistSans, jetbrains } from '@/lib/fonts';
+import { rootMetadata } from '@/lib/metadata';
 import { QueryProvider } from '@/providers/query-provider';
 import '@repo/ui/globals.css';
-import type { Metadata } from 'next';
 
 export default function RootLayout({
   children,
@@ -23,7 +23,4 @@ export default function RootLayout({
   );
 }
 
-export const metadata: Metadata = {
-  title: 'NachAI - AI User Interface Generator',
-  description: 'Generate UI components with NachAI',
-};
+export const metadata = rootMetadata;

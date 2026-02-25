@@ -14,10 +14,10 @@ export default function GetStartedPage() {
         <div className="relative z-10 w-full max-w-lg mx-auto flex flex-col items-center">
           <div className="text-center mb-10 space-y-3">
             <h1 className="text-4xl font-heading font-bold tracking-tight text-foreground sm:text-5xl">
-              Start building with NachAI
+              Join the future of design
             </h1>
             <p className="text-muted-foreground text-lg max-w-sm mx-auto">
-              The most advanced AI UI generator at your fingertips.
+              Empower your workflow with NachAI&apos;s generative capabilities.
             </p>
           </div>
           <div className="w-full">

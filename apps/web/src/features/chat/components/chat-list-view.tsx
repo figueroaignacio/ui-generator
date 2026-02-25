@@ -37,8 +37,10 @@ export function ChatListView() {
   return (
     <div className="flex flex-col h-full max-w-3xl mx-auto w-full p-8 gap-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">History</h1>
-        <p className="text-sm text-muted-foreground">All your past conversations in one place.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">Your Creations</h1>
+        <p className="text-sm text-muted-foreground">
+          A curated list of everything you&apos;ve built with NachAI.
+        </p>
       </div>
 
       {conversations.length === 0 ? (

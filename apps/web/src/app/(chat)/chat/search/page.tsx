@@ -1,10 +1,7 @@
 import { SearchView } from '@/features/chat/components/search-view';
-import { Metadata } from 'next';
+import { searchMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Search - NachAI',
-  description: 'Search your previous conversations with NachAI',
-};
+export const metadata = searchMetadata;
 
 export default function SearchPage() {
   return (
