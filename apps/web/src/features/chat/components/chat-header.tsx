@@ -1,7 +1,7 @@
 'use client';
 
 import { useUIStore } from '@/features/chat/store/ui.store';
-import { Menu01Icon } from '@hugeicons/core-free-icons';
+import { Menu01Icon, SparklesIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import Link from 'next/link';
 import { UserMenu } from './user-menu';
@@ -10,7 +10,7 @@ export function ChatHeader() {
   const { toggleSidebar } = useUIStore();
 
   return (
-    <header className="flex items-center justify-between px-3 h-14 shrink-0 bg-background/80 backdrop-blur-md sticky top-0 z-30">
+    <header className="flex items-center justify-between px-4 h-16 shrink-0 bg-background/95 backdrop-blur-md sticky top-0 z-30">
       <div className="flex items-center gap-2">
         <button
           onClick={toggleSidebar}
@@ -20,12 +20,20 @@ export function ChatHeader() {
           <HugeiconsIcon icon={Menu01Icon} size={22} />
         </button>
         <Link href="/chat" className="flex items-center px-2 group">
-          <span className="font-heading font-bold text-xl tracking-tight text-foreground transition-all duration-300">
+          <span className="font-heading font-normal text-2xl tracking-tight text-foreground/90 transition-all duration-300 group-hover:text-foreground">
             NachAI
           </span>
         </Link>
       </div>
-      <div className="flex items-center gap-2 px-1">
+      <div className="flex items-center gap-4 px-1">
+        <button className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-[#004a77] hover:bg-[#005a8f] text-[#c2e7ff] rounded-full text-sm font-medium transition-all shadow-md active:scale-95 group">
+          <HugeiconsIcon
+            icon={SparklesIcon}
+            size={18}
+            className="text-[#7ecbff] group-hover:rotate-12 transition-transform"
+          />
+          <span>Try NachAI Plus</span>
+        </button>
         <UserMenu />
       </div>
     </header>

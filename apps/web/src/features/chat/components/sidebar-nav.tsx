@@ -1,4 +1,4 @@
-import { PencilEdit01Icon } from '@hugeicons/core-free-icons';
+import { PencilEdit01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { cn } from '@repo/ui/lib/cn';
 import { useRouter } from 'next/navigation';
@@ -17,6 +17,11 @@ export function SidebarNav({ collapsed, onAction }: SidebarNavProps) {
   };
 
   const items = [
+    {
+      icon: Search01Icon,
+      label: 'Search',
+      onClick: () => handleAction(() => router.push('/chat/search')),
+    },
     {
       icon: PencilEdit01Icon,
       label: 'New Conversation',
