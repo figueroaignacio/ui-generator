@@ -3,7 +3,6 @@
 import { useConversations } from '@/features/chat/hooks/use-conversations';
 import { Search01Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
@@ -31,12 +30,7 @@ export function SearchView() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="flex flex-col gap-8 w-full max-w-3xl mx-auto"
-    >
+    <div className="flex flex-col gap-8 w-full max-w-3xl mx-auto">
       <h1 className="text-4xl font-normal text-foreground">Search</h1>
 
       <div className="relative group">
@@ -91,6 +85,6 @@ export function SearchView() {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,11 +1,10 @@
 'use client';
 
 import { useUIStore } from '@/features/chat/store/ui.store';
-import { Menu01Icon } from '@hugeicons/core-free-icons';
+import { PanelRightIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import Link from 'next/link';
 import { UserMenu } from './user-menu';
-
 export function ChatHeader() {
   const { toggleSidebar } = useUIStore();
 
@@ -17,7 +16,7 @@ export function ChatHeader() {
           className="md:hidden flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-all focus-visible:ring-2 focus-visible:ring-primary/20"
           aria-label="Toggle sidebar"
         >
-          <HugeiconsIcon icon={Menu01Icon} size={22} />
+          <HugeiconsIcon icon={PanelRightIcon} size={22} />
         </button>
         <Link href="/chat" className="flex items-center px-2 group">
           <span className="font-heading font-bold gradient-text text-xl tracking-tight text-foreground/90 transition-all duration-300 group-hover:text-foreground">

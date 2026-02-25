@@ -14,7 +14,7 @@ export function SidebarHeader({ collapsed, onToggle }: SidebarHeaderProps) {
     <div
       className={cn(
         'flex items-center py-3 h-14 shrink-0 px-3',
-        collapsed ? 'justify-center' : 'justify-between',
+        collapsed ? 'justify-center' : 'justify-end',
       )}
     >
       <button

@@ -1,6 +1,7 @@
 'use client';
 
 import { useConversations } from '@/features/chat/hooks/use-conversations';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { SidebarConversationItem } from './sidebar-conversation-item';
@@ -45,7 +46,7 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
         Recent Conversations
       </p>
       <ul className="flex flex-col overflow-y-auto px-2 pb-2 gap-0.5">
-        {conversations.map(chat => {
+        {conversations.slice(0, 6).map(chat => {
           const href = `/chat/c/${chat.id}`;
           const isActive = pathname === href;
           return (
@@ -60,6 +61,17 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
           );
         })}
       </ul>
+      {conversations.length > 6 && (
+        <div className="px-2 pb-2">
+          <Link
+            href="/chat/all"
+            onClick={onAction}
+            className="flex items-center justify-center w-full py-2 text-xs font-medium text-muted-foreground hover:bg-card hover:text-foreground rounded-lg transition-colors border border-dashed border-border/50 hover:border-border"
+          >
+            View all ({conversations.length})
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
