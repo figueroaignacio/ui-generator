@@ -21,7 +21,11 @@ const ERROR_MESSAGES: Record<string, string> = {
   default: 'Something went wrong. Please try again.',
 };
 
-export function LoginCardInner() {
+interface LoginCardInnerProps {
+  showHeader?: boolean;
+}
+
+export function LoginCardInner({ showHeader = true }: LoginCardInnerProps) {
   const { login, loginWithGoogle } = useAuth();
   const searchParams = useSearchParams();
   const errorKey = searchParams.get('error');
@@ -39,17 +43,19 @@ export function LoginCardInner() {
   }
 
   return (
-    <div className="w-full max-w-sm">
-      <div className="mb-6 text-center">
-        <div className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-muted">
-          <Logo />
+    <div className="w-full max-w-sm mx-auto">
+      {showHeader && (
+        <div className="mb-6 text-center">
+          <div className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-muted">
+            <Logo />
+          </div>
+          <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
+            NachAI
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">UI components powered by AI</p>
         </div>
-        <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
-          NachAI
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">UI components powered by AI</p>
-      </div>
-      <Card className="border-border shadow-lg">
+      )}
+      <Card className="border-border shadow-lg" variant="outline">
         <CardHeader className="pb-4 text-center">
           <CardTitle className="text-base">Get started for free</CardTitle>
           <CardDescription>

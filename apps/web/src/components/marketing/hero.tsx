@@ -1,6 +1,3 @@
-import { LoginCardInner } from '@/features/auth/components/login-card';
-import { Suspense } from 'react';
-
 export function Hero() {
   return (
     <section className="relative flex min-h-[calc(100vh-3.5rem)] overflow-hidden">
@@ -37,9 +34,7 @@ export function Hero() {
           </div>
         </div>
         <div className="flex w-full shrink-0 items-center justify-center lg:w-auto">
-          <Suspense>
-            <LoginCardInner />
-          </Suspense>
+          {/* Login Card removed from here, moving to get-started page */}
         </div>
       </div>
     </section>

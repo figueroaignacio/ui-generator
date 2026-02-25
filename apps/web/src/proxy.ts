@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const PROTECTED_PATHS = ['/chat'];
-const AUTH_PATHS = ['/login'];
 
-export function proxy(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const accessToken = request.cookies.get('access_token')?.value;
   const isAuthenticated = Boolean(accessToken);
 
   const isProtected = PROTECTED_PATHS.some(p => pathname.startsWith(p));
-  const isAuthPage = AUTH_PATHS.some(p => pathname.startsWith(p));
+  const isAuthPage = pathname === '/' || pathname.startsWith('/get-started');
 
   if (isProtected && !isAuthenticated) {
-    const loginUrl = new URL('/', request.url);
+    const loginUrl = new URL('/get-started', request.url);
     return NextResponse.redirect(loginUrl);
   }
 
