@@ -49,14 +49,13 @@ export function MarketingView() {
         <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight">
           Hey, What shall we build?
         </h1>
-
         <div className="w-full max-w-2xl relative group cursor-pointer" onClick={handleIntercept}>
           <div className="absolute inset-0 z-10" />
           <ChatInput
             value=""
             onChange={() => {}}
             onSubmit={() => {}}
-            placeholder="Ask NachAI anything..."
+            placeholder="Ask NachAI to generate a component…"
           />
         </div>
         <div className="h-6 flex items-center justify-center overflow-hidden">
@@ -66,7 +65,7 @@ export function MarketingView() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.35, ease: 'easeInOut' }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
               className="text-xs text-muted-foreground/70 text-center"
             >
               {AI_DISCLAIMERS[disclaimerIndex]}
