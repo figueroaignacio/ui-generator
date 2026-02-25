@@ -129,7 +129,10 @@
     @apply font-heading;
   }
 
-  /* Highlight.js - One Dark Pro vibrant colors */
+  .gradient-text {
+    @apply from-foreground to-foreground/30 bg-linear-to-br bg-clip-text leading-tight font-extrabold tracking-tight text-balance text-transparent;
+  }
+
   .hljs-comment,
   .hljs-quote {
     color: #7f848e;

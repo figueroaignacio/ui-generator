@@ -9,7 +9,7 @@ export function NavigationBar() {
     <nav className="flex w-full items-center justify-between">
       <Link href="/" className="flex items-center gap-x-2">
         <Logo />
-        <span>NachAI</span>
+        <span className="font-heading font-bold gradient-text">NachAI</span>
       </Link>
 
       <Link href="/get-started">

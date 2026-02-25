@@ -9,9 +9,8 @@ export function Navbar() {
     <nav className="flex w-full items-center justify-between">
       <Link href="/" className="flex items-center gap-x-2">
         <Logo />
-        <span className="font-mono font-semibold">NachAI</span>
+        <span className="font-heading font-bold gradient-text">NachAI</span>
       </Link>
-
       <Link href="/get-started">
         <Button
           size="sm"

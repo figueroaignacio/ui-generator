@@ -20,7 +20,7 @@ export function ChatHeader() {
           <HugeiconsIcon icon={Menu01Icon} size={22} />
         </button>
         <Link href="/chat" className="flex items-center px-2 group">
-          <span className="font-heading font-normal text-2xl tracking-tight text-foreground/90 transition-all duration-300 group-hover:text-foreground">
+          <span className="font-heading font-bold gradient-text text-xl tracking-tight text-foreground/90 transition-all duration-300 group-hover:text-foreground">
             NachAI
           </span>
         </Link>
