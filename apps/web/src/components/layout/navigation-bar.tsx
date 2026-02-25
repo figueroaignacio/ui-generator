@@ -1,10 +1,13 @@
-import { ArrowRight } from '@hugeicons/core-free-icons';
-import { HugeiconsIcon } from '@hugeicons/react';
+'use client';
+
+import { useUIStore } from '@/features/chat/store/ui.store';
 import { Button } from '@repo/ui/components/button';
 import Link from 'next/link';
 import { Logo } from '../shared/logo';
 
 export function NavigationBar() {
+  const { setAuthDialogOpen } = useUIStore();
+
   return (
     <nav className="flex w-full items-center justify-between">
       <Link href="/" className="flex items-center gap-x-2">
@@ -12,16 +15,16 @@ export function NavigationBar() {
         <span className="font-heading font-bold gradient-text">NachAI</span>
       </Link>
 
-      <Link href="/get-started">
+      <div className="flex items-center gap-2">
         <Button
           size="sm"
-          variant="ghost"
-          className="rounded-full px-5"
-          rightIcon={<HugeiconsIcon icon={ArrowRight} />}
+          variant="secondary"
+          className="rounded-full px-4 h-8 text-xs font-medium"
+          onClick={() => setAuthDialogOpen(true)}
         >
-          Get Started
+          Log in
         </Button>
-      </Link>
+      </div>
     </nav>
   );
 }

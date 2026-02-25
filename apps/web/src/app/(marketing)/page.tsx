@@ -1,9 +1,9 @@
-import { Hero } from '@/components/marketing/hero';
+import { MarketingView } from '@/components/marketing/marketing-view';
 
 export default function Home() {
   return (
     <main>
-      <Hero />
+      <MarketingView />
     </main>
   );
 }

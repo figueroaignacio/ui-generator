@@ -29,7 +29,7 @@ export function useAuth() {
     onSuccess: () => {
       clearAuth();
       queryClient.setQueryData(['auth-user'], null);
-      window.location.href = '/get-started';
+      window.location.href = '/';
     },
   });
 

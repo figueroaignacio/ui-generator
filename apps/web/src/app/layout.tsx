@@ -1,3 +1,4 @@
+import { AuthDialogWrapper } from '@/features/auth/components/auth-dialog-wrapper';
 import { geistMono, geistSans, jetbrains } from '@/lib/fonts';
 import { QueryProvider } from '@/providers/query-provider';
 import '@repo/ui/globals.css';
@@ -15,6 +16,7 @@ export default function RootLayout({
       >
         <QueryProvider>
           <main>{children}</main>
+          <AuthDialogWrapper />
         </QueryProvider>
       </body>
     </html>

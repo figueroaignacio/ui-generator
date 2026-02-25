@@ -55,7 +55,7 @@ export function LoginCardInner({ showHeader = true }: LoginCardInnerProps) {
           <p className="mt-1 text-sm text-muted-foreground">UI components powered by AI</p>
         </div>
       )}
-      <Card className="border-border shadow-lg" variant="outline">
+      <Card className="border-border shadow-lg" variant="ghost">
         <CardHeader className="pb-4 text-center">
           <CardTitle className="text-base">Get started for free</CardTitle>
           <CardDescription>
