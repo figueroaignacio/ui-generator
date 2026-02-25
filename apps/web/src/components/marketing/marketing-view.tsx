@@ -14,7 +14,7 @@ export function MarketingView() {
     <div className="relative flex flex-col h-full min-h-[calc(100vh-3.5rem)]">
       <div className="flex-1 flex flex-col items-center justify-center gap-8 py-16 px-4">
         <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight">
-          What shall we build?
+          Hey, What shall we build?
         </h1>
 
         <div className="w-full max-w-2xl relative group cursor-pointer" onClick={handleIntercept}>
