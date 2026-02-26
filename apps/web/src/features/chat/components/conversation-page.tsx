@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuth } from '@/features/auth/hooks/use-auth';
 import { ChatInput } from '@/features/chat/components/chat-input';
 import { ChatMessage } from '@/features/chat/components/chat-message';
 import { ChatSkeleton } from '@/features/chat/components/chat-skeleton';
@@ -18,7 +17,6 @@ const contentExit = { opacity: 0 };
 const passStop = () => {};
 
 export function ConversationPage({ id }: ConversationPageProps) {
-  const { user } = useAuth();
   const { messages, isLoading, isFetching, sendMessage } = useConversation(id);
   const [input, setInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -38,7 +36,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
         <AnimatePresence mode="wait">
-          {isFetching ? (
+          {isFetching && messages.length === 0 ? (
             <ChatSkeleton key="skeleton" />
           ) : (
             <motion.div
@@ -48,12 +46,10 @@ export function ConversationPage({ id }: ConversationPageProps) {
               exit={contentExit}
               className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full"
             >
-              {messages.map(msg => (
+              {messages.map((msg, index) => (
                 <ChatMessage
-                  key={msg.id}
+                  key={index}
                   message={{ id: msg.id, role: msg.role, content: msg.content }}
-                  avatarUrl={msg.role === 'user' ? (user?.avatarUrl ?? undefined) : undefined}
-                  username={msg.role === 'user' ? user?.username : 'NachAI'}
                   isStreaming={msg.id === 'streaming'}
                 />
               ))}

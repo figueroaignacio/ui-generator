@@ -26,7 +26,8 @@ const thinkingAnimate = { opacity: 1 };
 
 export function ChatPage() {
   const { user } = useAuth();
-  const messages: Message[] = useMemo(() => [], []);
+  const [localMessages, setLocalMessages] = useState<Message[]>([]);
+  const messages: Message[] = useMemo(() => localMessages, [localMessages]);
   const [input, setInput] = useState('');
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -44,6 +45,15 @@ export function ChatPage() {
       queryClient.setQueryData<Conversation[]>(['conversations'], old =>
         old ? [conversation, ...old] : [conversation],
       );
+
+      // Pre-seed the conversation cache to avoid loading skeletons on redirect
+      queryClient.setQueryData(['conversation', conversation.id], {
+        ...conversation,
+        messages: [
+          { id: 'temp-draft', role: 'user', content, createdAt: new Date().toISOString() },
+        ],
+      });
+
       await addMessage(conversation.id, 'user', content);
 
       return conversation;
@@ -58,6 +68,15 @@ export function ChatPage() {
     if (!content || startChatMutation.isPending) return;
 
     setInput('');
+    setLocalMessages([
+      {
+        id: 'temp',
+        role: 'user',
+        content,
+        createdAt: new Date().toISOString(),
+        conversationId: 'temp',
+      } as Message,
+    ]);
     startChatMutation.mutate(content);
   }, [input, startChatMutation]);
 
@@ -94,12 +113,7 @@ export function ChatPage() {
               transition={chatTransition}
             >
               {messages.map(msg => (
-                <ChatMessage
-                  key={msg.id}
-                  message={msg}
-                  avatarUrl={user?.avatarUrl ?? undefined}
-                  username={user?.username}
-                />
+                <ChatMessage key={msg.id} message={msg} />
               ))}
               {startChatMutation.isPending && (
                 <motion.div
