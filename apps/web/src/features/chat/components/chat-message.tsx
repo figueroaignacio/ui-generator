@@ -12,8 +12,6 @@ export interface Message {
 
 interface ChatMessageProps {
   message: Message;
-  avatarUrl?: string;
-  username?: string;
   isStreaming?: boolean;
 }
 
@@ -25,7 +23,7 @@ const heartbeatInitial = { scale: 0.5, opacity: 0 };
 const heartbeatAnimate = { scale: [1, 1.2, 1], opacity: [0.4, 0.8, 0.4] };
 const heartbeatTransition = { duration: 2, repeat: Infinity, ease: 'easeInOut' as const };
 
-export function ChatMessage({ message, username, avatarUrl, isStreaming }: ChatMessageProps) {
+export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
   const isUser = message.role === 'user';
 
   return (
