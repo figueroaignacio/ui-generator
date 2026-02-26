@@ -4,6 +4,7 @@ import { BackButton } from '@/components/shared/back-button';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Calendar01Icon, Location01Icon, UserIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
+import Image from 'next/image';
 
 function InfoRow({
   icon,
@@ -53,9 +54,11 @@ export default function ProfilePage() {
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5 mb-8">
             <div className="relative shrink-0">
               {user.avatarUrl ? (
-                <img
+                <Image
                   src={user.avatarUrl}
                   alt={user.username}
+                  width={96}
+                  height={96}
                   className="size-24 rounded-2xl object-cover ring-2 ring-border"
                 />
               ) : (

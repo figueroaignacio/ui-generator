@@ -9,10 +9,10 @@ export default function proxy(request: NextRequest) {
   const isAuthenticated = Boolean(accessToken);
 
   const isProtected = PROTECTED_PATHS.some(p => pathname.startsWith(p));
-  const isAuthPage = pathname === '/' || pathname.startsWith('/get-started');
+  const isAuthPage = pathname === '/';
 
   if (isProtected && !isAuthenticated) {
-    const loginUrl = new URL('/get-started', request.url);
+    const loginUrl = new URL('/', request.url);
     return NextResponse.redirect(loginUrl);
   }
 

@@ -17,7 +17,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.replace('/get-started');
+      router.replace('/');
     }
   }, [status, router]);
 

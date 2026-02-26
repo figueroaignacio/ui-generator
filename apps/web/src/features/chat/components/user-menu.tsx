@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
   DropdownSeparator,
 } from '@repo/ui/components/dropdown-menu';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 export function UserMenu() {
@@ -33,9 +34,11 @@ export function UserMenu() {
           aria-label="User menu"
         >
           {user.avatarUrl ? (
-            <img
+            <Image
               src={user.avatarUrl}
               alt={user.username}
+              width={32}
+              height={32}
               className="rounded-full object-cover size-8"
             />
           ) : (
@@ -49,9 +52,11 @@ export function UserMenu() {
         <div className="px-2 py-1.5 text-sm font-medium leading-none">
           <div className="flex items-center gap-2">
             {user.avatarUrl ? (
-              <img
+              <Image
                 src={user.avatarUrl}
                 alt={user.username}
+                width={32}
+                height={32}
                 className="rounded-full object-cover size-8"
               />
             ) : (
