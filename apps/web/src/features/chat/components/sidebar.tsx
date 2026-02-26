@@ -14,8 +14,9 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          'hidden md:flex flex-col h-screen bg-secondary border-r border-border transition-all duration-300 ease-in-out shrink-0',
-          !sidebarOpen ? 'w-14' : 'w-80',
+          'hidden md:flex flex-col transition-all duration-300 ease-in-out shrink-0 overflow-hidden',
+          'my-4 ml-4 h-[calc(100vh-2rem)] rounded-xl bg-secondary border border-white/5 shadow-md',
+          !sidebarOpen ? 'w-[72px]' : 'w-[280px]',
         )}
       >
         <SidebarHeader collapsed={!sidebarOpen} onToggle={toggleSidebar} />
@@ -46,9 +47,10 @@ function MobileSidebar() {
       )}
       <aside
         className={cn(
-          'md:hidden fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-secondary border-r border-border',
-          'transition-transform duration-300 ease-in-out shadow-2xl',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+          'md:hidden fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col overflow-hidden',
+          'my-4 ml-4 h-[calc(100vh-2rem)] rounded-[24px] bg-muted/60 border-white/5 border shadow-2xl backdrop-blur-xl',
+          'transition-transform duration-300 ease-in-out',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-[120%]',
         )}
       >
         <SidebarHeader collapsed={false} onToggle={handleClose} />

@@ -58,17 +58,6 @@ export function ChatMessage({ message, username, avatarUrl, isStreaming }: ChatM
         )}
         <MarkdownRenderer content={message.content} isStreaming={isStreaming} />
       </div>
-      {isUser && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full overflow-hidden mt-0.5 ring-2 ring-border shadow-sm">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt={username ?? 'You'} className="object-cover w-full h-full" />
-          ) : (
-            <span className="text-xs font-bold bg-muted text-muted-foreground w-full h-full flex items-center justify-center">
-              {(username?.[0] ?? 'U').toUpperCase()}
-            </span>
-          )}
-        </div>
-      )}
     </motion.div>
   );
 }

@@ -11,7 +11,7 @@ export function ChatHeader() {
   const { toggleSidebar } = useUIStore();
 
   return (
-    <header className="flex items-center justify-between px-4 h-16 shrink-0 bg-background/95 backdrop-blur-md sticky top-0 z-30">
+    <header className="flex items-center justify-between px-4 h-16 py-11 shrink-0 bg-background/95 backdrop-blur-md sticky top-0 z-30">
       <div className="flex items-center gap-2">
         <button
           onClick={toggleSidebar}
