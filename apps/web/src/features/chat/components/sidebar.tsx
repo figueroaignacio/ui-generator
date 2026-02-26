@@ -48,7 +48,7 @@ function MobileSidebar() {
       <aside
         className={cn(
           'md:hidden fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col overflow-hidden',
-          'my-4 ml-4 h-[calc(100vh-2rem)] rounded-[24px] bg-muted/60 border-white/5 border shadow-2xl backdrop-blur-xl',
+          'my-4 ml-4 h-[calc(100vh-2rem)] rounded-[24px] bg-secondary border-white/5 border shadow-2xl backdrop-blur-xl',
           'transition-transform duration-300 ease-in-out',
           sidebarOpen ? 'translate-x-0' : '-translate-x-[120%]',
         )}
