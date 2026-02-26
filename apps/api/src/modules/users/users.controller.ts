@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../auth/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -9,8 +11,8 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getProfile(@Request() req) {
-    return this.usersService.findOne(req.user.id);
+  getProfile(@CurrentUser() user: User) {
+    return this.usersService.findOne(user.id);
   }
 
   @UseGuards(JwtAuthGuard)

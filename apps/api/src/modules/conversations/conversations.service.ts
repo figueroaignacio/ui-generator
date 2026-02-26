@@ -1,6 +1,13 @@
 import { google } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generateText, streamText } from 'ai';
 import { Repository } from 'typeorm';
@@ -19,6 +26,7 @@ export class ConversationsService {
     private readonly conversationRepo: Repository<Conversation>,
     @InjectRepository(Message)
     private readonly messageRepo: Repository<Message>,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(userId: string, dto: CreateConversationDto): Promise<Conversation> {
@@ -98,7 +106,7 @@ export class ConversationsService {
       content: msg.content,
     })) as any[];
 
-    const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
+    const groq = createGroq({ apiKey: this.configService.get<string>('GROQ_API_KEY') });
 
     try {
       this.logger.log(
@@ -127,12 +135,12 @@ export class ConversationsService {
         `[generateResponse] ERROR in generateResponse: ${error.message}`,
         error.stack,
       );
-      throw new Error(`Gemini Error: ${error.message}`);
+      throw new InternalServerErrorException(`Gemini Error: ${error.message}`);
     }
   }
 
   private resolveModel(model: string) {
-    const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
+    const groq = createGroq({ apiKey: this.configService.get<string>('GROQ_API_KEY') });
     if (model.startsWith('groq/')) return groq(model.replace('groq/', ''));
     if (model.startsWith('google/')) return google(model.replace('google/', ''));
     // default fallback

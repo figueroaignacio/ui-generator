@@ -8,11 +8,13 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  Request,
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { Response } from 'express';
+import { CurrentUser } from '../auth/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { User } from '../users/entities/user.entity';
 import { ConversationsService } from './conversations.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -23,52 +25,48 @@ export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 
   @Post()
-  create(@Request() req, @Body() dto: CreateConversationDto) {
-    return this.conversationsService.create(req.user.id, dto);
+  create(@CurrentUser() user: User, @Body() dto: CreateConversationDto) {
+    return this.conversationsService.create(user.id, dto);
   }
 
   @Get()
-  findAll(@Request() req) {
-    return this.conversationsService.findAllByUser(req.user.id);
+  findAll(@CurrentUser() user: User) {
+    return this.conversationsService.findAllByUser(user.id);
   }
 
   @Get(':id')
-  findOne(@Request() req, @Param('id', ParseUUIDPipe) id: string) {
-    return this.conversationsService.findOne(id, req.user.id);
+  findOne(@CurrentUser() user: User, @Param('id', ParseUUIDPipe) id: string) {
+    return this.conversationsService.findOne(id, user.id);
   }
 
   @Post(':id/messages')
   addMessage(
-    @Request() req,
+    @CurrentUser() user: User,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: CreateMessageDto,
   ) {
-    return this.conversationsService.addMessage(id, req.user.id, dto);
+    return this.conversationsService.addMessage(id, user.id, dto);
   }
 
   @Post(':id/generate')
-  generate(@Request() req, @Param('id', ParseUUIDPipe) id: string) {
-    return this.conversationsService.generateResponse(id, req.user.id);
+  generate(@CurrentUser() user: User, @Param('id', ParseUUIDPipe) id: string) {
+    return this.conversationsService.generateResponse(id, user.id);
   }
 
   @Post(':id/stream')
   async generateStream(
-    @Request() req,
+    @CurrentUser() user: User,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: { model?: string },
     @Res() res: Response,
   ) {
-    const result = await this.conversationsService.generateStreamResponse(
-      id,
-      req.user.id,
-      body?.model,
-    );
+    const result = await this.conversationsService.generateStreamResponse(id, user.id, body?.model);
     return result.pipeTextStreamToResponse(res);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Request() req, @Param('id', ParseUUIDPipe) id: string) {
-    return this.conversationsService.remove(id, req.user.id);
+  remove(@CurrentUser() user: User, @Param('id', ParseUUIDPipe) id: string) {
+    return this.conversationsService.remove(id, user.id);
   }
 }
