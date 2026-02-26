@@ -3,7 +3,7 @@
 import { ChatInput } from '@/features/chat/components/chat-input';
 import { useUIStore } from '@/features/chat/store/ui.store';
 import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const AI_DISCLAIMERS = [
   '⚠️ May occasionally hallucinate. Like all of us on a Monday.',
@@ -39,22 +39,25 @@ export function MarketingView() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleIntercept = () => {
+  const handleIntercept = useCallback(() => {
     setAuthDialogOpen(true);
-  };
+  }, [setAuthDialogOpen]);
+
+  const passChange = useCallback(() => {}, []);
+  const passSubmit = useCallback(() => {}, []);
 
   return (
     <div className="relative flex flex-col h-full min-h-[calc(100vh-3.5rem)]">
       <div className="flex-1 flex flex-col items-center justify-center gap-8 py-16 px-4">
         <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight max-w-xl">
-          Hey, Let's build something together
+          Hey, Let&apos;s build something together
         </h1>
         <div className="w-full max-w-2xl relative group cursor-pointer" onClick={handleIntercept}>
           <div className="absolute inset-0 z-10" />
           <ChatInput
             value=""
-            onChange={() => {}}
-            onSubmit={() => {}}
+            onChange={passChange}
+            onSubmit={passSubmit}
             placeholder="Ask NachAI to generate a component…"
           />
         </div>

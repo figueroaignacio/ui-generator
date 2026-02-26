@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '@repo/ui/components/card';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth } from '../hooks/use-auth';
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -32,15 +32,15 @@ export function LoginCardInner({ showHeader = true }: LoginCardInnerProps) {
   const errorMessage = errorKey ? (ERROR_MESSAGES[errorKey] ?? ERROR_MESSAGES.default) : null;
   const [loadingProvider, setLoadingProvider] = useState<'github' | 'google' | null>(null);
 
-  function handleGithubLogin() {
+  const handleGithubLogin = useCallback(() => {
     setLoadingProvider('github');
     login();
-  }
+  }, [login]);
 
-  function handleGoogleLogin() {
+  const handleGoogleLogin = useCallback(() => {
     setLoadingProvider('google');
     loginWithGoogle();
-  }
+  }, [loginWithGoogle]);
 
   return (
     <div className="w-full max-w-sm mx-auto">

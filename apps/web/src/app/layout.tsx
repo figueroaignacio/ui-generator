@@ -1,8 +1,13 @@
-import { AuthDialogWrapper } from '@/features/auth/components/auth-dialog-wrapper';
 import { geistMono, geistSans, jetbrains } from '@/lib/fonts';
 import { rootMetadata } from '@/lib/metadata';
 import { QueryProvider } from '@/providers/query-provider';
 import '@repo/ui/globals.css';
+import dynamic from 'next/dynamic';
+
+const AuthDialogWrapper = dynamic(
+  () => import('@/features/auth/components/auth-dialog-wrapper').then(mod => mod.AuthDialogWrapper),
+  { ssr: false },
+);
 
 export default function RootLayout({
   children,

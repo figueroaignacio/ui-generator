@@ -1,5 +1,7 @@
-import { Navbar } from './navbar';
-import { NavigationBar } from './navigation-bar';
+import dynamic from 'next/dynamic';
+
+const Navbar = dynamic(() => import('./navbar').then(mod => mod.Navbar));
+const NavigationBar = dynamic(() => import('./navigation-bar').then(mod => mod.NavigationBar));
 
 export function Header() {
   return (
