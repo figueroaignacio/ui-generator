@@ -3,7 +3,7 @@
 import { useConversations } from '@/features/chat/hooks/use-conversations';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { SidebarConversationItem } from './sidebar-conversation-item';
 
 interface SidebarHistoryProps {
@@ -12,6 +12,7 @@ interface SidebarHistoryProps {
 
 export function SidebarHistory({ onAction }: SidebarHistoryProps) {
   const { conversations, isLoading, deleteConversation } = useConversations();
+  const slicedConversations = useMemo(() => conversations.slice(0, 6), [conversations]);
   const pathname = usePathname();
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
@@ -24,10 +25,12 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
     }
   };
 
+  const SKELETON_ITEMS_HISTORY = Array.from({ length: 5 });
+
   if (isLoading && conversations.length === 0) {
     return (
       <div className="flex flex-col flex-1 overflow-hidden mt-6 px-4 gap-4">
-        {[...Array(5)].map((_, i) => (
+        {SKELETON_ITEMS_HISTORY.map((_, i) => (
           <div key={i} className="flex flex-col gap-2">
             <div className="h-4 w-full bg-secondary rounded-md animate-pulse" />
           </div>
@@ -46,7 +49,7 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
         Recent Conversations
       </p>
       <ul className="flex flex-col overflow-y-auto px-2 pb-2 gap-0.5">
-        {conversations.slice(0, 6).map(chat => {
+        {slicedConversations.map(chat => {
           const href = `/chat/c/${chat.id}`;
           const isActive = pathname === href;
           return (

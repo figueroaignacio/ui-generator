@@ -17,14 +17,22 @@ interface ChatMessageProps {
   isStreaming?: boolean;
 }
 
+const messageInitial = { opacity: 0, scale: 0.98, y: 4 };
+const messageAnimate = { opacity: 1, scale: 1, y: 0 };
+const messageTransition = { duration: 0.2, ease: 'easeOut' as const };
+
+const heartbeatInitial = { scale: 0.5, opacity: 0 };
+const heartbeatAnimate = { scale: [1, 1.2, 1], opacity: [0.4, 0.8, 0.4] };
+const heartbeatTransition = { duration: 2, repeat: Infinity, ease: 'easeInOut' as const };
+
 export function ChatMessage({ message, username, avatarUrl, isStreaming }: ChatMessageProps) {
   const isUser = message.role === 'user';
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.98, y: 4 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
+      initial={messageInitial}
+      animate={messageAnimate}
+      transition={messageTransition}
       className={cn('flex gap-3 w-full items-start', isUser ? 'justify-end' : 'justify-start')}
     >
       <div
@@ -41,9 +49,9 @@ export function ChatMessage({ message, username, avatarUrl, isStreaming }: ChatM
         {isStreaming && !isUser && (
           <div className="absolute -left-4 top-2.5">
             <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.8, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              initial={heartbeatInitial}
+              animate={heartbeatAnimate}
+              transition={heartbeatTransition}
               className="w-1.5 h-1.5 rounded-full bg-secondary-foreground"
             />
           </div>

@@ -6,7 +6,7 @@ import { cn } from '@repo/ui/lib/cn';
 import { motion } from 'motion/react';
 import { useEffect, useRef } from 'react';
 
-interface ChatInputProps {
+export interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
@@ -14,6 +14,12 @@ interface ChatInputProps {
   onStop?: () => void;
   placeholder?: string;
 }
+
+const buttonVariants = {
+  initial: { scale: 0.8, opacity: 0 },
+  animate: { scale: 1, opacity: 1 },
+  exit: { scale: 0.8, opacity: 0 },
+};
 
 export function ChatInput({
   value,
@@ -58,9 +64,9 @@ export function ChatInput({
         {isLoading ? (
           <motion.button
             key="stop"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            initial={buttonVariants.initial}
+            animate={buttonVariants.animate}
+            exit={buttonVariants.exit}
             onClick={onStop}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background hover:bg-foreground/80 transition-colors"
             aria-label="Stop generation"
@@ -70,9 +76,9 @@ export function ChatInput({
         ) : (
           <motion.button
             key="send"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            initial={buttonVariants.initial}
+            animate={buttonVariants.animate}
+            exit={buttonVariants.exit}
             onClick={onSubmit}
             disabled={!canSubmit}
             className={cn(

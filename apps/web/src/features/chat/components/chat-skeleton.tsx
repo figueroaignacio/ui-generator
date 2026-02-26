@@ -2,22 +2,24 @@
 
 import { motion } from 'motion/react';
 
-export function ChatSkeleton() {
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
     },
-  };
+  },
+};
 
-  const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0 },
-  };
+const item = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0 },
+};
 
+const SKELETON_ITEMS = Array.from({ length: 4 });
+
+export function ChatSkeleton() {
   return (
     <motion.div
       variants={container}
@@ -25,18 +27,15 @@ export function ChatSkeleton() {
       animate="show"
       className="flex flex-col gap-8 px-4 py-8 max-w-3xl mx-auto w-full"
     >
-      {[...Array(4)].map((_, i) => (
+      {SKELETON_ITEMS.map((_, i) => (
         <motion.div
           key={i}
           variants={item}
           className={`flex gap-4 items-start ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
         >
-          {/* Avatar Skeleton */}
           <div className="h-9 w-9 rounded-full bg-secondary shrink-0 relative overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-r from-transparent via-foreground/5 to-transparent animate-shimmer -translate-x-full" />
           </div>
-
-          {/* Message Content Skeleton */}
           <div
             className={`flex flex-col gap-2.5 max-w-[80%] ${i % 2 === 0 ? 'items-start' : 'items-end'}`}
           >

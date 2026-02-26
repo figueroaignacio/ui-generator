@@ -22,6 +22,12 @@ interface ChatListItemProps {
   isDeleting: boolean;
 }
 
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
+
 export function ChatListItem({ chat, onDelete, isDeleting }: ChatListItemProps) {
   return (
     <div className="group relative flex items-center justify-between py-4 transition-colors hover:bg-muted/30 -mx-4 px-4 ">
@@ -32,17 +38,10 @@ export function ChatListItem({ chat, onDelete, isDeleting }: ChatListItemProps) 
           </span>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <HugeiconsIcon icon={Calendar01Icon} size={12} />
-            <span>
-              {new Intl.DateTimeFormat('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              }).format(new Date(chat.updatedAt))}
-            </span>
+            <span>{dateFormatter.format(new Date(chat.updatedAt))}</span>
           </div>
         </div>
       </Link>
-
       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <Dialog>
           <DialogTrigger asChild>

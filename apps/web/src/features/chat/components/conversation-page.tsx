@@ -12,6 +12,11 @@ interface ConversationPageProps {
   id: string;
 }
 
+const contentInitial = { opacity: 0 };
+const contentAnimate = { opacity: 1 };
+const contentExit = { opacity: 0 };
+const passStop = () => {};
+
 export function ConversationPage({ id }: ConversationPageProps) {
   const { user } = useAuth();
   const { messages, isLoading, isFetching, sendMessage } = useConversation(id);
@@ -38,9 +43,9 @@ export function ConversationPage({ id }: ConversationPageProps) {
           ) : (
             <motion.div
               key="content"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={contentInitial}
+              animate={contentAnimate}
+              exit={contentExit}
               className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full"
             >
               {messages.map(msg => (
@@ -65,7 +70,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
             onChange={setInput}
             onSubmit={handleSubmit}
             isLoading={isLoading}
-            onStop={() => {}}
+            onStop={passStop}
           />
         </div>
       </div>

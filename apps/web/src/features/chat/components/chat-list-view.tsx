@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ChatListItem } from './chat-list-item';
 
+const SKELETON_ITEMS = Array.from({ length: 8 });
+
 export function ChatListView() {
   const { conversations, isLoading, deleteConversation } = useConversations();
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export function ChatListView() {
       <div className="flex flex-col h-full max-w-3xl mx-auto w-full p-8 gap-6 animate-pulse">
         <div className="h-8 w-48 bg-muted rounded-lg" />
         <div className="space-y-4">
-          {[...Array(8)].map((_, i) => (
+          {SKELETON_ITEMS.map((_, i) => (
             <div key={i} className="h-16 bg-muted/50 rounded-xl" />
           ))}
         </div>
@@ -42,7 +44,6 @@ export function ChatListView() {
           A curated list of everything you&apos;ve built with NachAI.
         </p>
       </div>
-
       {conversations.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl border border-dashed border-border/50">
           <HugeiconsIcon icon={Chat01Icon} size={32} className="text-muted-foreground/50 mb-4" />

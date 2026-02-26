@@ -12,6 +12,18 @@ import { ChatInput } from './chat-input';
 import { ChatMessage, type Message } from './chat-message';
 import { ChatSuggestions } from './chat-suggestions';
 
+const heroInitial = { opacity: 0 };
+const heroAnimate = { opacity: 1 };
+const heroExit = { opacity: 0, y: -10 };
+const heroTransition = { duration: 0.25 };
+
+const chatInitial = { opacity: 0 };
+const chatAnimate = { opacity: 1 };
+const chatTransition = { duration: 0.2 };
+
+const thinkingInitial = { opacity: 0 };
+const thinkingAnimate = { opacity: 1 };
+
 export function ChatPage() {
   const { user } = useAuth();
   const messages: Message[] = useMemo(() => [], []);
@@ -57,10 +69,10 @@ export function ChatPage() {
             <motion.div
               key="hero"
               className="flex flex-col items-center justify-center h-full gap-8 py-16 px-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
+              initial={heroInitial}
+              animate={heroAnimate}
+              exit={heroExit}
+              transition={heroTransition}
             >
               {user && <ChatHero username={user.username} />}
               <div className="w-full max-w-2xl">
@@ -77,9 +89,9 @@ export function ChatPage() {
             <motion.div
               key="chat"
               className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
+              initial={chatInitial}
+              animate={chatAnimate}
+              transition={chatTransition}
             >
               {messages.map(msg => (
                 <ChatMessage
@@ -91,8 +103,8 @@ export function ChatPage() {
               ))}
               {startChatMutation.isPending && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={thinkingInitial}
+                  animate={thinkingAnimate}
                   className="flex items-center gap-1 text-muted-foreground text-sm font-medium animate-pulse py-2 px-1"
                 >
                   Thinking...

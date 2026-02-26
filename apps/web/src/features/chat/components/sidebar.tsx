@@ -2,6 +2,7 @@
 
 import { useUIStore } from '@/features/chat/store/ui.store';
 import { cn } from '@repo/ui/lib/cn';
+import { useCallback } from 'react';
 import { SidebarHeader } from './sidebar-header';
 import { SidebarHistory } from './sidebar-history';
 import { SidebarNav } from './sidebar-nav';
@@ -31,12 +32,16 @@ export function Sidebar() {
 function MobileSidebar() {
   const { sidebarOpen, setSidebarOpen } = useUIStore();
 
+  const handleClose = useCallback(() => {
+    setSidebarOpen(false);
+  }, [setSidebarOpen]);
+
   return (
     <>
       {sidebarOpen && (
         <div
           className="md:hidden fixed inset-0 z-40 bg-background/60 backdrop-blur-xs"
-          onClick={() => setSidebarOpen(false)}
+          onClick={handleClose}
         />
       )}
       <aside
@@ -46,10 +51,10 @@ function MobileSidebar() {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
-        <SidebarHeader collapsed={false} onToggle={() => setSidebarOpen(false)} />
+        <SidebarHeader collapsed={false} onToggle={handleClose} />
         <div className="flex flex-col flex-1 overflow-hidden">
-          <SidebarNav collapsed={false} onAction={() => setSidebarOpen(false)} />
-          <SidebarHistory onAction={() => setSidebarOpen(false)} />
+          <SidebarNav collapsed={false} onAction={handleClose} />
+          <SidebarHistory onAction={handleClose} />
         </div>
       </aside>
     </>

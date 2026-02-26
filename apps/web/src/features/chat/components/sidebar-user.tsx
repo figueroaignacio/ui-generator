@@ -13,6 +13,7 @@ import {
 } from '@repo/ui/components/dropdown-menu';
 import { cn } from '@repo/ui/lib/cn';
 import Image from 'next/image';
+import { useMemo } from 'react';
 
 interface SidebarUserProps {
   collapsed: boolean;
@@ -21,14 +22,17 @@ interface SidebarUserProps {
 export function SidebarUser({ collapsed }: SidebarUserProps) {
   const { user, logout } = useAuth();
 
-  if (!user) return null;
+  const initials = useMemo(() => {
+    if (!user) return '';
+    return user.username
+      .split(/[\s_-]/)
+      .map(w => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  }, [user]);
 
-  const initials = user.username
-    .split(/[\s_-]/)
-    .map(w => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  if (!user) return null;
 
   return (
     <div className="shrink-0 border-t border-border/50 p-2">
