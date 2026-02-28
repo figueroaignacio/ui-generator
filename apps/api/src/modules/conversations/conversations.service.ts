@@ -1,5 +1,3 @@
-import { google } from '@ai-sdk/google';
-import { createGroq } from '@ai-sdk/groq';
 import {
   ForbiddenException,
   Injectable,
@@ -9,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { generateText, streamText } from 'ai';
+import { generateText, resolveModel, streamText } from '@repo/ai';
 import { Repository } from 'typeorm';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -106,14 +104,12 @@ export class ConversationsService {
       content: msg.content,
     })) as any[];
 
-    const groq = createGroq({ apiKey: this.configService.get<string>('GROQ_API_KEY') });
-
     try {
       this.logger.log(
         `[generateResponse] Calling Groq (llama-3.3-70b-versatile) for conversation ${conversationId}...`,
       );
       const { text } = await generateText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: this.resolveModel('groq/llama-3.3-70b-versatile'),
         system: SYSTEM_PROMPT,
         messages: history,
       });
@@ -140,11 +136,7 @@ export class ConversationsService {
   }
 
   private resolveModel(model: string) {
-    const groq = createGroq({ apiKey: this.configService.get<string>('GROQ_API_KEY') });
-    if (model.startsWith('groq/')) return groq(model.replace('groq/', ''));
-    if (model.startsWith('google/')) return google(model.replace('google/', ''));
-    // default fallback
-    return groq('llama-3.3-70b-versatile');
+    return resolveModel(model, this.configService.get<string>('GROQ_API_KEY') ?? '');
   }
 
   async generateStreamResponse(
