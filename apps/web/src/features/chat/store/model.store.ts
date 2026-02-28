@@ -15,7 +15,7 @@ export const AI_MODELS: AIModel[] = [
     id: 'groq/llama-3.3-70b-versatile',
     label: 'Llama 3.3 70B',
     provider: 'groq',
-    description: 'Fast & free · Groq',
+    description: 'Fast · Groq',
   },
   {
     id: 'groq/llama-3.1-8b-instant',
@@ -24,14 +24,14 @@ export const AI_MODELS: AIModel[] = [
     description: 'Ultra-fast · Groq',
   },
   {
-    id: 'google/gemini-2.0-flash-lite',
-    label: 'Gemini 2.0 Flash Lite',
+    id: 'google/gemini-2.5-flash-lite',
+    label: 'Gemini 2.5 Flash Lite',
     provider: 'google',
-    description: 'Google · Free tier',
+    description: 'Fast · Google',
   },
   {
-    id: 'google/gemini-2.0-flash',
-    label: 'Gemini 2.0 Flash',
+    id: 'google/gemini-2.5-flash',
+    label: 'Gemini 2.5 Flash',
     provider: 'google',
     description: 'Google · Free tier',
   },

@@ -7,8 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { generateText, resolveModel, streamText } from '@repo/ai';
-import { SYSTEM_PROMPT } from '@repo/ai/src/prompts/system-prompt';
+import { generateText, resolveModel, streamText, SYSTEM_PROMPT } from '@repo/ai';
 import { Repository } from 'typeorm';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
