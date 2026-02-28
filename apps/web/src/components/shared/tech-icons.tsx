@@ -40,7 +40,7 @@ function GoogleIcon() {
 const GroqIcon = () => (
   <svg
     fill="currentColor"
-    fill-rule="evenodd"
+    fillRule="evenodd"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
     width="13"
@@ -79,8 +79,8 @@ const GeminiIcon = () => (
         y1="15.5"
         y2="12"
       >
-        <stop stop-color="#08B962"></stop>
-        <stop offset="1" stop-color="#08B962" stop-opacity="0"></stop>
+        <stop stopColor="#08B962"></stop>
+        <stop offset="1" stopColor="#08B962" stopOpacity="0"></stop>
       </linearGradient>
       <linearGradient
         gradientUnits="userSpaceOnUse"
@@ -90,8 +90,8 @@ const GeminiIcon = () => (
         y1="5.5"
         y2="11"
       >
-        <stop stop-color="#F94543"></stop>
-        <stop offset="1" stop-color="#F94543" stop-opacity="0"></stop>
+        <stop stopColor="#F94543"></stop>
+        <stop offset="1" stopColor="#F94543" stopOpacity="0"></stop>
       </linearGradient>
       <linearGradient
         gradientUnits="userSpaceOnUse"
@@ -101,8 +101,8 @@ const GeminiIcon = () => (
         y1="13.5"
         y2="12"
       >
-        <stop stop-color="#FABC12"></stop>
-        <stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop>
+        <stop stopColor="#FABC12"></stop>
+        <stop offset=".46" stopColor="#FABC12" stopOpacity="0"></stop>
       </linearGradient>
     </defs>
   </svg>
