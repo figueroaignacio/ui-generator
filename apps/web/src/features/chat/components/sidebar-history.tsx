@@ -25,16 +25,21 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
     }
   };
 
-  const SKELETON_ITEMS_HISTORY = Array.from({ length: 5 });
+  const SKELETON_WIDTHS = ['w-3/4', 'w-full', 'w-2/3', 'w-5/6', 'w-4/5'];
 
   if (isLoading && conversations.length === 0) {
     return (
-      <div className="flex flex-col flex-1 overflow-hidden mt-6 px-4 gap-4">
-        {SKELETON_ITEMS_HISTORY.map((_, i) => (
-          <div key={i} className="flex flex-col gap-2">
-            <div className="h-4 w-full bg-secondary rounded-md animate-pulse" />
-          </div>
-        ))}
+      <div className="flex flex-col flex-1 overflow-hidden mt-4">
+        <p className="px-5 pb-2 text-xs font-semibold text-foreground/70 uppercase tracking-wider">
+          Recent Conversations
+        </p>
+        <ul className="flex flex-col px-2 pb-2 gap-0.5">
+          {SKELETON_WIDTHS.map((width, i) => (
+            <li key={i} className="px-2 py-2 rounded-lg">
+              <div className={`h-4 ${width} bg-card rounded-xl animate-pulse`} />
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }
