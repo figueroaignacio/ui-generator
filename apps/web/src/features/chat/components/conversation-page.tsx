@@ -19,11 +19,25 @@ const passStop = () => {};
 export function ConversationPage({ id }: ConversationPageProps) {
   const { messages, isLoading, isFetching, sendMessage } = useConversation(id);
   const [input, setInput] = useState('');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (!isLoading) return;
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages, isLoading]);
+
+  const prevLengthRef = useRef(messages.length);
+  useEffect(() => {
+    if (isLoading) return;
+    if (messages.length !== prevLengthRef.current) {
+      prevLengthRef.current = messages.length;
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isLoading]);
 
   const handleSubmit = async () => {
     const content = input.trim();
@@ -34,7 +48,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto scroll-smooth">
         <AnimatePresence mode="wait">
           {isFetching && messages.length === 0 ? (
             <ChatSkeleton key="skeleton" />
