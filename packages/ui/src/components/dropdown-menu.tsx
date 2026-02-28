@@ -2,9 +2,11 @@
 
 import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import * as React from 'react';
 import { cn } from '../lib/cn';
+
+// --- Interfaces ---
 
 interface DropdownContextValue {
   isOpen: boolean;
@@ -44,7 +46,21 @@ interface DropdownMenuItemProps {
   disabled?: boolean;
   onSelect?: () => void;
   variant?: 'default' | 'destructive';
+  asChild?: boolean;
 }
+
+// --- Animation constants (module level) ---
+
+const DROPDOWN_ICON_VARIANTS = {
+  open: { rotate: 180 },
+  closed: { rotate: 0 },
+} as const;
+
+const DROPDOWN_ICON_TRANSITION = { type: 'spring', stiffness: 300, damping: 20 } as const;
+const DROPDOWN_ICON_STYLE = { willChange: 'transform' } as const;
+const DROPDOWN_CONTENT_STYLE = { willChange: 'opacity, transform, filter' } as const;
+
+// --- Context ---
 
 const DropdownContext = React.createContext<DropdownContextValue | null>(null);
 
@@ -53,6 +69,8 @@ const useDropdownContext = (): DropdownContextValue => {
   if (!context) throw new Error('Dropdown components must be used within DropdownMenu');
   return context;
 };
+
+// --- Helpers ---
 
 function useClickOutside(
   ref: React.RefObject<HTMLElement | null>,
@@ -79,6 +97,8 @@ function useClickOutside(
     };
   }, [ref, triggerRef, handler, enabled]);
 }
+
+// --- Components ---
 
 function DropdownMenu({
   children,
@@ -138,6 +158,7 @@ function DropdownMenuTrigger({
   asChild = false,
 }: DropdownMenuTriggerProps): React.JSX.Element {
   const { isOpen, toggleMenu, triggerRef, triggerId, contentId } = useDropdownContext();
+  const shouldReduceMotion = useReducedMotion();
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -146,11 +167,6 @@ function DropdownMenuTrigger({
     },
     [toggleMenu, onClick],
   );
-
-  const iconVariants = {
-    open: { rotate: 180 },
-    closed: { rotate: 0 },
-  };
 
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
@@ -168,14 +184,12 @@ function DropdownMenuTrigger({
       ref={triggerRef}
       type="button"
       onClick={handleClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileTap={!shouldReduceMotion ? { scale: 0.98 } : undefined}
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium',
         'text-foreground border-border border',
         'hover:bg-muted transition-colors',
         'focus-visible:ring-ring focus-visible:ring-1 focus-visible:outline-none',
-        isOpen && '',
         className,
       )}
       aria-expanded={isOpen}
@@ -185,9 +199,10 @@ function DropdownMenuTrigger({
     >
       {children}
       <motion.span
-        variants={iconVariants}
+        variants={DROPDOWN_ICON_VARIANTS}
         animate={isOpen ? 'open' : 'closed'}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        transition={DROPDOWN_ICON_TRANSITION}
+        style={DROPDOWN_ICON_STYLE}
       >
         <HugeiconsIcon icon={ArrowDown01Icon} className="h-4 w-4 opacity-50" size={16} />
       </motion.span>
@@ -204,7 +219,6 @@ function DropdownMenuContent({
   const { isOpen, closeMenu, contentId, triggerId, triggerRef } = useDropdownContext();
   const contentRef = React.useRef<HTMLDivElement>(null);
   const [position, setPosition] = React.useState<'bottom' | 'top'>('bottom');
-  const [coords, setCoords] = React.useState({ top: 0, left: 0, width: 0 });
 
   useClickOutside(contentRef, triggerRef, closeMenu, isOpen);
 
@@ -297,7 +311,7 @@ function DropdownMenuContent({
             filter: 'blur(2px)',
             transition: { duration: 0.15 },
           }}
-          style={{ ...verticalStyle }}
+          style={{ ...verticalStyle, ...DROPDOWN_CONTENT_STYLE }}
           className={cn(
             'border-border absolute z-50 min-w-48 overflow-hidden rounded-md border',
             'bg-background backdrop-blur-lg',
@@ -320,6 +334,7 @@ function DropdownMenuItem({
   disabled = false,
   variant = 'default',
   onSelect,
+  asChild = false,
 }: DropdownMenuItemProps): React.JSX.Element {
   const { closeMenu } = useDropdownContext();
 
@@ -327,14 +342,18 @@ function DropdownMenuItem({
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (disabled) return;
       e.stopPropagation();
-      onClick?.(e);
+      onClick?.(e as any);
       onSelect?.();
       closeMenu();
     },
     [disabled, onClick, onSelect, closeMenu],
   );
 
-  return (
+  const style = {
+    '--accent': variant === 'destructive' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(0,0,0, 0.04)',
+  } as React.CSSProperties;
+
+  const content = (
     <motion.div
       role="menuitem"
       tabIndex={disabled ? -1 : 0}
@@ -348,15 +367,28 @@ function DropdownMenuItem({
         variant === 'destructive' && 'text-destructive focus:text-destructive',
         className,
       )}
-      style={
-        {
-          '--accent': variant === 'destructive' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(0,0,0, 0.04)',
-        } as React.CSSProperties
-      }
+      style={style}
     >
       {children}
     </motion.div>
   );
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onClick: handleClick,
+      className: cn(
+        'relative flex cursor-pointer items-center rounded-md px-3 py-2 text-sm outline-none select-none',
+        'transition-colors duration-200',
+        disabled && 'pointer-events-none opacity-50',
+        variant === 'destructive' && 'text-destructive focus:text-destructive',
+        className,
+        (children.props as any).className,
+      ),
+      style: { ...style, ...(children.props as any).style },
+    } as any);
+  }
+
+  return content;
 }
 
 function DropdownLabel({ children }: { children: React.ReactNode }) {

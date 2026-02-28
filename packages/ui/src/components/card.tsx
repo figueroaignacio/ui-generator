@@ -10,11 +10,9 @@ const cardVariants = cva(
     variants: {
       variant: {
         default: 'bg-card text-card-foreground border border-border shadow-sm',
-
         outline: 'bg-card text-card-foreground border-2 border-border shadow-none',
         ghost: 'bg-transparent text-card-foreground border-0 shadow-none',
       },
-
       gradient: {
         true: 'bg-gradient-to-br from-card to-card/80',
       },
@@ -39,7 +37,6 @@ const cardHeaderVariants = cva('flex flex-col space-y-1.5', {
 });
 
 const cardTitleVariants = cva('text-lg font-semibold leading-none tracking-tight');
-
 const cardDescriptionVariants = cva('text-sm text-muted-foreground leading-relaxed');
 
 const cardContentVariants = cva('flex-1', {

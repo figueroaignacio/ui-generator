@@ -8,6 +8,35 @@ import { cloneElement } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../lib/cn';
 
+// --- Animation constants (module level) ---
+
+const OVERLAY_VARIANTS = {
+  initial: { opacity: 0, backdropFilter: 'blur(0px)' },
+  animate: { opacity: 1, backdropFilter: 'blur(4px)' },
+  exit: { opacity: 0, backdropFilter: 'blur(0px)' },
+} as const;
+
+const OVERLAY_TRANSITION = { duration: 0.3 } as const;
+const OVERLAY_STYLE = { willChange: 'opacity' } as const;
+
+const DIALOG_VARIANTS = {
+  initial: { opacity: 0, scale: 0.9, filter: 'blur(10px)', y: 10 },
+  animate: { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0 },
+  exit: { opacity: 0, scale: 0.9, filter: 'blur(10px)', y: 10 },
+} as const;
+
+const DIALOG_TRANSITION = {
+  type: 'spring',
+  damping: 25,
+  stiffness: 350,
+  mass: 0.5,
+} as const;
+
+const DIALOG_EXIT_TRANSITION = { duration: 0.2, ease: 'easeIn' } as const;
+const DIALOG_STYLE = { willChange: 'opacity, transform, filter' } as const;
+
+// --- Context ---
+
 type DialogContextType = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,10 +48,12 @@ const DialogContext = React.createContext<DialogContextType | undefined>(undefin
 const useDialogContext = () => {
   const context = React.useContext(DialogContext);
   if (!context) {
-    throw new Error('useDialogContext debe usarse dentro de un DialogProvider');
+    throw new Error('useDialogContext must be used within a Dialog');
   }
   return context;
 };
+
+// --- Components ---
 
 interface DialogProps {
   children: React.ReactNode;
@@ -89,6 +120,14 @@ interface DialogPortalProps {
 }
 
 const DialogPortal = ({ children }: DialogPortalProps) => {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return createPortal(children, document.body);
 };
 
@@ -127,11 +166,13 @@ const DialogOverlay = React.forwardRef<HTMLDivElement, DialogOverlayProps>(
     return (
       <motion.div
         ref={ref}
-        initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-        animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
-        exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-        transition={{ duration: 0.3 }}
-        className={cn('fixed inset-0 z-200 bg-background/50', className)}
+        variants={OVERLAY_VARIANTS}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={OVERLAY_TRANSITION}
+        style={OVERLAY_STYLE}
+        className={cn('fixed inset-0 z-200 bg-background/20 backdrop-blur-sm', className)}
         onClick={() => setOpen(false)}
         {...props}
       />
@@ -140,13 +181,13 @@ const DialogOverlay = React.forwardRef<HTMLDivElement, DialogOverlayProps>(
 );
 DialogOverlay.displayName = 'DialogOverlay';
 
-type DialogContentProps = Omit<HTMLMotionProps<'div'>, 'children'> & {
+type DialogContentProps = {
   className?: string;
   children?: React.ReactNode;
 };
 
 const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, children }, ref) => {
     const { id, open } = useDialogContext();
 
     return (
@@ -161,36 +202,16 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
               aria-labelledby={`${id}-title`}
               aria-describedby={`${id}-description`}
               onClick={e => e.stopPropagation()}
-              initial={{
-                opacity: 0,
-                scale: 0.9,
-                filter: 'blur(10px)',
-                y: 10,
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                filter: 'blur(0px)',
-                y: 0,
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.9,
-                filter: 'blur(10px)',
-                y: 10,
-                transition: { duration: 0.2, ease: 'easeIn' },
-              }}
-              transition={{
-                type: 'spring',
-                damping: 25,
-                stiffness: 350,
-                mass: 0.5,
-              }}
+              variants={DIALOG_VARIANTS}
+              initial="initial"
+              animate="animate"
+              exit={{ ...DIALOG_VARIANTS.exit, transition: DIALOG_EXIT_TRANSITION }}
+              transition={DIALOG_TRANSITION}
+              style={DIALOG_STYLE}
               className={cn(
                 'bg-background fixed top-[50%] left-[50%] z-500 grid w-full max-w-xl translate-x-[-50%] translate-y-[-50%] gap-4 rounded-xl border p-6 shadow-lg',
                 className,
               )}
-              {...props}
             >
               {children}
               <DialogClose className="ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none">

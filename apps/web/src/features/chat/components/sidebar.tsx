@@ -2,13 +2,19 @@
 
 import { useUIStore } from '@/features/chat/store/ui.store';
 import { cn } from '@repo/ui/lib/cn';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { SidebarHeader } from './sidebar-header';
 import { SidebarHistory } from './sidebar-history';
 import { SidebarNav } from './sidebar-nav';
 
 export function Sidebar() {
-  const { sidebarOpen, toggleSidebar } = useUIStore();
+  const { sidebarOpen, toggleSidebar, setSidebarOpen } = useUIStore();
+
+  useEffect(() => {
+    if (window.innerWidth >= 768) {
+      setSidebarOpen(true);
+    }
+  }, [setSidebarOpen]);
 
   return (
     <>
