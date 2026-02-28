@@ -8,12 +8,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generateText, resolveModel, streamText } from '@repo/ai';
+import { SYSTEM_PROMPT } from '@repo/ai/src/prompts/system-prompt';
 import { Repository } from 'typeorm';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Conversation } from './entities/conversation.entity';
 import { Message, MessageRole } from './entities/message.entity';
-import { SYSTEM_PROMPT } from './prompts/system.prompt';
 
 @Injectable()
 export class ConversationsService {
