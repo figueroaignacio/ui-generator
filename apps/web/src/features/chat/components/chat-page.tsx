@@ -21,9 +21,6 @@ const chatInitial = { opacity: 0, y: 8 };
 const chatAnimate = { opacity: 1, y: 0 };
 const chatTransition = { duration: 0.25, delay: 0.1 };
 
-const thinkingAnimate = { opacity: [0.4, 1, 0.4] };
-const thinkingTransition = { duration: 1.5, repeat: Infinity, ease: 'easeInOut' as const };
-
 export function ChatPage() {
   const { user } = useAuth();
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
@@ -123,39 +120,37 @@ export function ChatPage() {
               {messages.map(msg => (
                 <ChatMessage key={msg.id} message={msg} />
               ))}
-              {showThinking && (
-                <div
-                  className="flex items-center gap-2 py-2 px-1"
-                  role="status"
-                  aria-live="polite"
-                  aria-label="Processing your message"
-                >
-                  <div className="flex items-center gap-1">
-                    <motion.span
-                      className="w-1.5 h-1.5 rounded-full bg-primary"
-                      animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
-                      transition={{ duration: 0.8, repeat: Infinity, delay: 0 }}
-                    />
-                    <motion.span
-                      className="w-1.5 h-1.5 rounded-full bg-primary"
-                      animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
-                      transition={{ duration: 0.8, repeat: Infinity, delay: 0.15 }}
-                    />
-                    <motion.span
-                      className="w-1.5 h-1.5 rounded-full bg-primary"
-                      animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
-                      transition={{ duration: 0.8, repeat: Infinity, delay: 0.3 }}
-                    />
-                  </div>
-                  <motion.span
-                    animate={thinkingAnimate}
-                    transition={thinkingTransition}
-                    className="text-muted-foreground text-sm font-medium"
+              <AnimatePresence>
+                {showThinking && (
+                  <motion.div
+                    layout
+                    initial={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.9, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                    className="flex items-center gap-3 py-3 px-1"
+                    role="status"
+                    aria-label="Processing your message"
                   >
-                    Thinking...
-                  </motion.span>
-                </div>
-              )}
+                    <div className="flex items-center gap-[3px]">
+                      {[0, 1, 2].map(i => (
+                        <motion.span
+                          key={i}
+                          className="w-[5px] h-[5px] rounded-full bg-primary/70"
+                          animate={{ y: [0, -4, 0] }}
+                          transition={{
+                            duration: 0.5,
+                            repeat: Infinity,
+                            delay: i * 0.12,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-muted-foreground text-sm">Thinking...</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <div ref={bottomRef} />
             </motion.div>
           )}

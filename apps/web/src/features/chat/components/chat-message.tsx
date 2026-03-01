@@ -15,14 +15,10 @@ interface ChatMessageProps {
   isStreaming?: boolean;
 }
 
-const messageInitial = { opacity: 0, scale: 0.98, y: 4 };
+const messageInitial = { opacity: 0, scale: 0.98, y: 10 };
 const messageAnimate = { opacity: 1, scale: 1, y: 0 };
 const messageTransition = { type: 'spring' as const, stiffness: 300, damping: 24 };
 const willChangeStyle = { willChange: 'transform, opacity' } as const;
-
-const heartbeatInitial = { scale: 0.5, opacity: 0 };
-const heartbeatAnimate = { scale: [1, 1.2, 1], opacity: [0.4, 0.8, 0.4] };
-const heartbeatTransition = { duration: 2, repeat: Infinity, ease: 'easeInOut' as const };
 
 export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
   const isUser = message.role === 'user';
@@ -30,7 +26,8 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
 
   return (
     <motion.div
-      initial={shouldReduceMotion ? undefined : messageInitial}
+      layout="position"
+      initial={shouldReduceMotion || !isStreaming ? false : messageInitial}
       animate={messageAnimate}
       transition={messageTransition}
       style={shouldReduceMotion ? undefined : willChangeStyle}
@@ -44,19 +41,9 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
             : 'text-foreground px-0',
           isStreaming &&
             !isUser &&
-            'before:absolute before:inset-0 before:rounded-2xl before:bg-primary/5 before:animate-pulse before:-z-10',
+            'before:absolute before:inset-0 before:animate-pulse before:-z-10',
         )}
       >
-        {isStreaming && !isUser && (
-          <div className="absolute -left-4 top-2.5">
-            <motion.div
-              initial={heartbeatInitial}
-              animate={heartbeatAnimate}
-              transition={heartbeatTransition}
-              className="w-1.5 h-1.5 rounded-full bg-secondary-foreground"
-            />
-          </div>
-        )}
         <MarkdownRenderer content={message.content} isStreaming={isStreaming} />
       </div>
     </motion.div>
