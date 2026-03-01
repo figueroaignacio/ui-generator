@@ -33,7 +33,7 @@ export function SearchView() {
     <div className="flex flex-col gap-8 w-full max-w-3xl mx-auto">
       <h1 className="text-4xl font-normal text-foreground">Find Your Ideas</h1>
 
-      <div className="relative group">
+      <div className="relative group" role="search">
         <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
           <HugeiconsIcon
             icon={Search01Icon}
@@ -46,6 +46,7 @@ export function SearchView() {
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="Search conversations"
+          aria-label="Search conversations"
           className="w-full h-14 pl-14 pr-6 bg-secondary/30 ring-1 ring-border border-none hover:ring-border-hover focus:ring-primary/40 focus:bg-secondary/50 rounded-full text-lg transition-all outline-none"
           autoFocus
         />

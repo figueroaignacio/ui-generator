@@ -56,6 +56,9 @@ const buttonVariants = {
   whileTap: { scale: 0.97 },
 };
 
+const hoverSpring = { type: 'spring' as const, stiffness: 400, damping: 17 };
+const willChangeTransform = { willChange: 'transform' } as const;
+
 export function ChatSuggestions({ onSelect }: ChatSuggestionsProps) {
   return (
     <motion.div
@@ -70,9 +73,10 @@ export function ChatSuggestions({ onSelect }: ChatSuggestionsProps) {
           key={s.label}
           initial={buttonVariants.initial}
           animate={buttonVariants.animate}
-          transition={{ delay: 0.08 * i, duration: 0.2 }}
+          transition={{ delay: 0.08 * i, ...hoverSpring }}
           whileHover={buttonVariants.whileHover}
           whileTap={buttonVariants.whileTap}
+          style={willChangeTransform}
           onClick={() => onSelect(s.label)}
           className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs md:text-sm text-foreground hover:bg-accent hover:border-primary/30 transition-colors"
         >

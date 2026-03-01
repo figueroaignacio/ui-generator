@@ -3,7 +3,7 @@
 import { Cancel01Icon, SentIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { cn } from '@repo/ui/lib/cn';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef } from 'react';
 
 export interface ChatInputProps {
@@ -21,6 +21,9 @@ const buttonVariants = {
   exit: { scale: 0.8, opacity: 0 },
 };
 
+const springTransition = { type: 'spring' as const, stiffness: 400, damping: 17 };
+const textareaMaxHeight = { maxHeight: '200px' };
+
 export function ChatInput({
   value,
   onChange,
@@ -30,6 +33,7 @@ export function ChatInput({
   placeholder = 'Ask NachAI to generate a component…',
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -57,16 +61,19 @@ export function ChatInput({
         placeholder={placeholder}
         rows={1}
         className="w-full resize-none bg-transparent px-4 pt-4 pb-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-        style={{ maxHeight: '200px' }}
+        style={textareaMaxHeight}
         disabled={isLoading}
+        aria-label="Message input"
       />
       <div className="flex items-center justify-end px-3 pb-3 pt-1">
         {isLoading ? (
           <motion.button
             key="stop"
-            initial={buttonVariants.initial}
+            initial={shouldReduceMotion ? undefined : buttonVariants.initial}
             animate={buttonVariants.animate}
-            exit={buttonVariants.exit}
+            exit={shouldReduceMotion ? undefined : buttonVariants.exit}
+            transition={springTransition}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
             onClick={onStop}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background hover:bg-foreground/80 transition-colors"
             aria-label="Stop generation"
@@ -76,9 +83,12 @@ export function ChatInput({
         ) : (
           <motion.button
             key="send"
-            initial={buttonVariants.initial}
+            initial={shouldReduceMotion ? undefined : buttonVariants.initial}
             animate={buttonVariants.animate}
-            exit={buttonVariants.exit}
+            exit={shouldReduceMotion ? undefined : buttonVariants.exit}
+            transition={springTransition}
+            whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.92 }}
             onClick={onSubmit}
             disabled={!canSubmit}
             className={cn(

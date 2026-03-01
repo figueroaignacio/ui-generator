@@ -4,7 +4,7 @@ import { ChatInput } from '@/features/chat/components/chat-input';
 import { ChatMessage } from '@/features/chat/components/chat-message';
 import { ChatSkeleton } from '@/features/chat/components/chat-skeleton';
 import { useConversation } from '@/features/chat/hooks/use-conversation';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
 interface ConversationPageProps {
@@ -14,6 +14,22 @@ interface ConversationPageProps {
 const contentInitial = { opacity: 0 };
 const contentAnimate = { opacity: 1 };
 const contentExit = { opacity: 0 };
+
+const listVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.04 },
+  },
+};
+
+const messageVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 24 };
+
 const passStop = () => {};
 
 export function ConversationPage({ id }: ConversationPageProps) {
@@ -21,6 +37,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
   const [input, setInput] = useState('');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (!isLoading) return;
@@ -59,14 +76,30 @@ export function ConversationPage({ id }: ConversationPageProps) {
               animate={contentAnimate}
               exit={contentExit}
               className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full"
+              role="log"
+              aria-live="polite"
+              aria-label="Chat messages"
             >
-              {messages.map((msg, index) => (
-                <ChatMessage
-                  key={index}
-                  message={{ id: msg.id, role: msg.role, content: msg.content }}
-                  isStreaming={msg.id === 'streaming'}
-                />
-              ))}
+              <motion.div
+                variants={shouldReduceMotion ? undefined : listVariants}
+                initial="hidden"
+                animate="visible"
+                className="flex flex-col gap-6"
+              >
+                {messages.map((msg, index) => (
+                  <motion.div
+                    key={index}
+                    variants={shouldReduceMotion ? undefined : messageVariants}
+                    transition={springTransition}
+                    style={shouldReduceMotion ? undefined : { willChange: 'transform, opacity' }}
+                  >
+                    <ChatMessage
+                      message={{ id: msg.id, role: msg.role, content: msg.content }}
+                      isStreaming={msg.id === 'streaming'}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
 
               <div ref={bottomRef} className="h-4" />
             </motion.div>

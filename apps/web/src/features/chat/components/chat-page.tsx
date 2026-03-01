@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { addMessage, createConversation } from '../api/conversations.api';
@@ -33,6 +33,7 @@ export function ChatPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const bottomRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const isHero = messages.length === 0;
 
@@ -95,9 +96,9 @@ export function ChatPage() {
             <motion.div
               key="hero"
               className="flex flex-col items-center justify-center h-full gap-8 py-16 px-4"
-              initial={heroInitial}
+              initial={shouldReduceMotion ? undefined : heroInitial}
               animate={heroAnimate}
-              exit={heroExit}
+              exit={shouldReduceMotion ? undefined : heroExit}
               transition={heroTransition}
             >
               {user && <ChatHero username={user.username} />}
@@ -115,7 +116,7 @@ export function ChatPage() {
             <motion.div
               key="chat"
               className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full"
-              initial={chatInitial}
+              initial={shouldReduceMotion ? undefined : chatInitial}
               animate={chatAnimate}
               transition={chatTransition}
             >
@@ -123,7 +124,12 @@ export function ChatPage() {
                 <ChatMessage key={msg.id} message={msg} />
               ))}
               {showThinking && (
-                <div className="flex items-center gap-2 py-2 px-1">
+                <div
+                  className="flex items-center gap-2 py-2 px-1"
+                  role="status"
+                  aria-live="polite"
+                  aria-label="Processing your message"
+                >
                   <div className="flex items-center gap-1">
                     <motion.span
                       className="w-1.5 h-1.5 rounded-full bg-primary"

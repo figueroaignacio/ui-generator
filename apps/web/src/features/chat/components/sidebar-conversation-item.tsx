@@ -35,7 +35,7 @@ export function SidebarConversationItem({
   const href = `/chat/c/${chat.id}`;
 
   return (
-    <li className="group relative">
+    <div className="group relative">
       <Link
         href={href}
         onClick={onAction}
@@ -89,6 +89,6 @@ export function SidebarConversationItem({
           </DialogContent>
         </Dialog>
       </div>
-    </li>
+    </div>
   );
 }

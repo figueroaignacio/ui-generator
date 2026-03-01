@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@repo/ui/lib/cn';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { MarkdownRenderer } from './markdown-renderer';
 
 export interface Message {
@@ -17,7 +17,8 @@ interface ChatMessageProps {
 
 const messageInitial = { opacity: 0, scale: 0.98, y: 4 };
 const messageAnimate = { opacity: 1, scale: 1, y: 0 };
-const messageTransition = { duration: 0.2, ease: 'easeOut' as const };
+const messageTransition = { type: 'spring' as const, stiffness: 300, damping: 24 };
+const willChangeStyle = { willChange: 'transform, opacity' } as const;
 
 const heartbeatInitial = { scale: 0.5, opacity: 0 };
 const heartbeatAnimate = { scale: [1, 1.2, 1], opacity: [0.4, 0.8, 0.4] };
@@ -25,12 +26,14 @@ const heartbeatTransition = { duration: 2, repeat: Infinity, ease: 'easeInOut' a
 
 export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
   const isUser = message.role === 'user';
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <motion.div
-      initial={messageInitial}
+      initial={shouldReduceMotion ? undefined : messageInitial}
       animate={messageAnimate}
       transition={messageTransition}
+      style={shouldReduceMotion ? undefined : willChangeStyle}
       className={cn('flex gap-3 w-full items-start', isUser ? 'justify-end' : 'justify-start')}
     >
       <div
