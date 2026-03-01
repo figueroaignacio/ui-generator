@@ -30,7 +30,7 @@ export function ModelSelector() {
         className={cn(
           'h-8 gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border-border/60',
           'text-muted-foreground hover:text-foreground',
-          'bg-transparent hover:bg-muted/50 transition-colors',
+          'bg-background hover:bg-muted',
         )}
       >
         <ProviderIcon provider={selectedModel.provider} />

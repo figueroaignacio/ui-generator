@@ -4,7 +4,6 @@ import { useUIStore } from '@/features/chat/store/ui.store';
 import { PanelRightIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import Link from 'next/link';
-import { ModelSelector } from './model-selector';
 import { UserMenu } from './user-menu';
 
 export function ChatHeader() {
@@ -15,6 +14,7 @@ export function ChatHeader() {
       <div className="flex items-center gap-2">
         <button
           onClick={toggleSidebar}
+          type="button"
           className="md:hidden flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-all focus-visible:ring-2 focus-visible:ring-primary/20"
           aria-label="Toggle sidebar"
         >
@@ -25,7 +25,6 @@ export function ChatHeader() {
             NachAI
           </span>
         </Link>
-        <ModelSelector />
       </div>
       <div className="flex items-center gap-4 px-1">
         <UserMenu />
