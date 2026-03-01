@@ -1,6 +1,7 @@
 'use client';
 
 import { useConversations } from '@/features/chat/hooks/use-conversations';
+import { buttonVariants } from '@repo/ui/components/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -74,7 +75,11 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
           <Link
             href="/chat/all"
             onClick={onAction}
-            className="flex items-center justify-center w-full py-2 text-xs font-medium text-muted-foreground hover:bg-card hover:text-foreground rounded-lg transition-colors border border-dashed border-border/50 hover:border-border"
+            className={buttonVariants({
+              variant: 'secondary',
+              size: 'sm',
+              className: 'w-full',
+            })}
           >
             View all ({conversations.length})
           </Link>
