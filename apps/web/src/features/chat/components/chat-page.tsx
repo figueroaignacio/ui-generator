@@ -14,21 +14,22 @@ import { ChatSuggestions } from './chat-suggestions';
 
 const heroInitial = { opacity: 0 };
 const heroAnimate = { opacity: 1 };
-const heroExit = { opacity: 0, y: -10 };
+const heroExit = { opacity: 0, y: -10, transition: { duration: 0.15 } };
 const heroTransition = { duration: 0.25 };
 
-const chatInitial = { opacity: 0 };
-const chatAnimate = { opacity: 1 };
-const chatTransition = { duration: 0.2 };
+const chatInitial = { opacity: 0, y: 8 };
+const chatAnimate = { opacity: 1, y: 0 };
+const chatTransition = { duration: 0.25, delay: 0.1 };
 
-const thinkingInitial = { opacity: 0 };
-const thinkingAnimate = { opacity: 1 };
+const thinkingAnimate = { opacity: [0.4, 1, 0.4] };
+const thinkingTransition = { duration: 1.5, repeat: Infinity, ease: 'easeInOut' as const };
 
 export function ChatPage() {
   const { user } = useAuth();
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const messages: Message[] = useMemo(() => localMessages, [localMessages]);
   const [input, setInput] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -61,6 +62,9 @@ export function ChatPage() {
     onSuccess: conversation => {
       router.push(`/chat/c/${conversation.id}`);
     },
+    onError: () => {
+      setIsThinking(false);
+    },
   });
 
   const handleSubmit = useCallback(async () => {
@@ -68,6 +72,7 @@ export function ChatPage() {
     if (!content || startChatMutation.isPending) return;
 
     setInput('');
+    setIsThinking(true);
     setLocalMessages([
       {
         id: 'temp',
@@ -80,10 +85,12 @@ export function ChatPage() {
     startChatMutation.mutate(content);
   }, [input, startChatMutation]);
 
+  const showThinking = isThinking || startChatMutation.isPending;
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {isHero ? (
             <motion.div
               key="hero"
@@ -115,14 +122,33 @@ export function ChatPage() {
               {messages.map(msg => (
                 <ChatMessage key={msg.id} message={msg} />
               ))}
-              {startChatMutation.isPending && (
-                <motion.div
-                  initial={thinkingInitial}
-                  animate={thinkingAnimate}
-                  className="flex items-center gap-1 text-muted-foreground text-sm font-medium animate-pulse py-2 px-1"
-                >
-                  Thinking...
-                </motion.div>
+              {showThinking && (
+                <div className="flex items-center gap-2 py-2 px-1">
+                  <div className="flex items-center gap-1">
+                    <motion.span
+                      className="w-1.5 h-1.5 rounded-full bg-primary"
+                      animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: 0 }}
+                    />
+                    <motion.span
+                      className="w-1.5 h-1.5 rounded-full bg-primary"
+                      animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: 0.15 }}
+                    />
+                    <motion.span
+                      className="w-1.5 h-1.5 rounded-full bg-primary"
+                      animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: 0.3 }}
+                    />
+                  </div>
+                  <motion.span
+                    animate={thinkingAnimate}
+                    transition={thinkingTransition}
+                    className="text-muted-foreground text-sm font-medium"
+                  >
+                    Thinking...
+                  </motion.span>
+                </div>
               )}
               <div ref={bottomRef} />
             </motion.div>
@@ -136,7 +162,7 @@ export function ChatPage() {
               value={input}
               onChange={setInput}
               onSubmit={handleSubmit}
-              isLoading={startChatMutation.isPending}
+              isLoading={showThinking}
               onStop={() => {}}
             />
           </div>

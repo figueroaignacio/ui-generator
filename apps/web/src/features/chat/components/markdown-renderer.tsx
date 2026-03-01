@@ -122,14 +122,7 @@ export function MarkdownRenderer({ content, className, isStreaming }: MarkdownRe
       >
         {content}
       </ReactMarkdown>
-      {isStreaming && !content && (
-        <div
-          className="flex items-center gap-2 py-2 px-1 text-muted-foreground/80 font-medium text-sm animate-pulse"
-          aria-label="Thinking..."
-        >
-          <span className="italic tracking-tight">Thinking...</span>
-        </div>
-      )}
+      {isStreaming && !content && <div className="h-4" />}
     </div>
   );
 }
