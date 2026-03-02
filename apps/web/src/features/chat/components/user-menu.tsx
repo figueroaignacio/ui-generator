@@ -1,7 +1,13 @@
 'use client';
 
+import { ThemeToggle } from '@/components/shared/theme-toggle';
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { HelpCircleIcon, Logout01Icon, UserCircle02Icon } from '@hugeicons/core-free-icons';
+import {
+  HelpCircleIcon,
+  Logout01Icon,
+  Moon02Icon,
+  UserCircle02Icon,
+} from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   DropdownMenu,
@@ -87,6 +93,17 @@ export function UserMenu() {
           />
           Help
         </DropdownMenuItem>
+        <div className="flex items-center justify-between px-2 py-1.5">
+          <div className="flex items-center">
+            <HugeiconsIcon
+              icon={Moon02Icon}
+              size={15}
+              className="mr-2.5 shrink-0 text-muted-foreground"
+            />
+            <span className="text-sm">Theme</span>
+          </div>
+          <ThemeToggle />
+        </div>
         <DropdownSeparator />
         <DropdownMenuItem variant="destructive" onSelect={logout}>
           <HugeiconsIcon icon={Logout01Icon} size={15} className="mr-2.5 shrink-0" />

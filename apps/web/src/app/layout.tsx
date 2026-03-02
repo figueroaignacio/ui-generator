@@ -1,7 +1,7 @@
 import { AuthDialogWrapper } from '@/features/auth/components/auth-dialog-wrapper';
 import { geistMono, geistSans, jetbrains } from '@/lib/fonts';
 import { rootMetadata } from '@/lib/metadata';
-import { QueryProvider } from '@/providers/query-provider';
+import { Providers } from '@/providers/providers';
 import '@repo/ui/globals.css';
 
 export default function RootLayout({
@@ -14,10 +14,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${jetbrains.variable} antialiased`}
       >
-        <QueryProvider>
+        <Providers>
           <main>{children}</main>
           <AuthDialogWrapper />
-        </QueryProvider>
+        </Providers>
       </body>
     </html>
   );
