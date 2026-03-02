@@ -47,7 +47,7 @@ export function ChatListView() {
       {conversations.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl border border-dashed border-border/50">
           <HugeiconsIcon icon={Chat01Icon} size={32} className="text-muted-foreground/50 mb-4" />
-          <p className="text-muted-foreground">No conversations yet.</p>
+          <p className="text-muted-foreground">No conversations yet</p>
           <Button asChild variant="link" className="mt-2">
             <Link href="/chat/new">Start a new one</Link>
           </Button>

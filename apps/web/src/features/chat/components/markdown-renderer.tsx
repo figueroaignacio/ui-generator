@@ -120,9 +120,8 @@ export function MarkdownRenderer({ content, className, isStreaming }: MarkdownRe
         rehypePlugins={rehypePlugins}
         components={markdownComponents as React.ComponentProps<typeof ReactMarkdown>['components']}
       >
-        {content}
+        {isStreaming ? `${content} \u258F` : content}
       </ReactMarkdown>
-      {isStreaming && !content && <div className="h-4" />}
     </div>
   );
 }

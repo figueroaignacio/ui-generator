@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   addMessage as apiAddMessage,
   generateResponseStream as apiGenerateStream,
@@ -12,6 +12,8 @@ export function useConversation(conversationId: string) {
   const queryClient = useQueryClient();
   const { selectedModelId } = useModelStore();
   const [streamingMessage, setStreamingMessage] = useState<string | null>(null);
+  const generatingRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const query = useQuery({
     queryKey: ['conversation', conversationId],
@@ -24,35 +26,69 @@ export function useConversation(conversationId: string) {
   const generateMutation = useMutation({
     mutationFn: async () => {
       setStreamingMessage('');
-      const response = await apiGenerateStream(conversationId, selectedModelId);
 
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No reader available');
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
-      const decoder = new TextDecoder();
-      let done = false;
-      let accumulatedText = '';
+      try {
+        const response = await apiGenerateStream(conversationId, selectedModelId);
+        // Note: apiGenerateStream doesn't take signal yet, but we'll use it to check for aborted state
 
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        const chunk = decoder.decode(value, { stream: true });
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error('No reader available');
 
-        accumulatedText += chunk;
-        setStreamingMessage(accumulatedText);
+        const decoder = new TextDecoder();
+        let done = false;
+        let accumulatedText = '';
+
+        while (!done) {
+          if (controller.signal.aborted) {
+            await reader.cancel();
+            break;
+          }
+
+          const { value, done: doneReading } = await reader.read();
+          done = doneReading;
+
+          if (value) {
+            const chunk = decoder.decode(value, { stream: true });
+            accumulatedText += chunk;
+            setStreamingMessage(accumulatedText);
+          }
+        }
+        return accumulatedText;
+      } finally {
+        abortControllerRef.current = null;
       }
-
-      return accumulatedText;
     },
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['conversation', conversationId] }),
-        queryClient.invalidateQueries({ queryKey: ['conversations'] }),
-      ]);
+    onSuccess: async finalText => {
+      // Optimistically update the cache with the full message to avoid "flash"
+      queryClient.setQueryData<ConversationWithMessages>(['conversation', conversationId], old => {
+        if (!old) return old;
+        const assistantMsg: Message = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: finalText,
+          conversationId,
+          createdAt: new Date().toISOString(),
+        };
+        return {
+          ...old,
+          messages: [...(old.messages ?? []).filter(m => m.id !== 'streaming'), assistantMsg],
+        };
+      });
+
       setStreamingMessage(null);
+      generatingRef.current = false;
+
+      // Invalidate in background
+      queryClient.invalidateQueries({ queryKey: ['conversation', conversationId] });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
     onError: () => {
       setStreamingMessage(null);
+      generatingRef.current = false;
+      abortControllerRef.current = null;
     },
   });
 
@@ -86,7 +122,13 @@ export function useConversation(conversationId: string) {
     const isGenerateNotStarted =
       generateMutation.isIdle && !generateMutation.isPending && !generateMutation.isSuccess;
 
-    if (isFirstUserMessage && !query.isPlaceholderData && isGenerateNotStarted) {
+    if (
+      isFirstUserMessage &&
+      !query.isPlaceholderData &&
+      isGenerateNotStarted &&
+      !generatingRef.current
+    ) {
+      generatingRef.current = true;
       generateMutation.mutate();
     }
   }, [
@@ -133,6 +175,8 @@ export function useConversation(conversationId: string) {
     onSuccess: () => {
       setStreamingMessage('');
       queryClient.invalidateQueries({ queryKey: ['conversation', conversationId] });
+      generatingRef.current = true;
+      generateMutation.reset();
       generateMutation.mutate();
     },
   });

@@ -2,7 +2,6 @@
 
 import { useConversations } from '@/features/chat/hooks/use-conversations';
 import { buttonVariants } from '@repo/ui/components/button';
-import { motion, useReducedMotion } from 'motion/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -12,19 +11,6 @@ interface SidebarHistoryProps {
   onAction?: () => void;
 }
 
-const listVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.04 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 6 },
-  visible: { opacity: 1, y: 0 },
-};
-
 const SKELETON_WIDTHS = ['w-3/4', 'w-full', 'w-2/3', 'w-5/6', 'w-4/5'];
 
 export function SidebarHistory({ onAction }: SidebarHistoryProps) {
@@ -32,7 +18,6 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
   const slicedConversations = useMemo(() => conversations.slice(0, 6), [conversations]);
   const pathname = usePathname();
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
-  const shouldReduceMotion = useReducedMotion();
 
   const handleDelete = async (id: string) => {
     setIsDeletingId(id);
@@ -61,7 +46,11 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
   }
 
   if (!isLoading && conversations.length === 0) {
-    return <div className="px-5 py-4 text-xs text-muted-foreground italic">No conver...</div>;
+    return (
+      <div className="px-5 py-4 text-xs text-muted-foreground italic">
+        Empty... Start a new conversation
+      </div>
+    );
   }
 
   return (
@@ -69,11 +58,8 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
       <p className="px-5 pb-2 text-xs font-semibold text-foreground/70 uppercase tracking-wider">
         Recent Conversations
       </p>
-      <motion.ul
+      <ul
         className="flex flex-col overflow-y-auto px-2 pb-2 gap-0.5"
-        variants={shouldReduceMotion ? undefined : listVariants}
-        initial="hidden"
-        animate="visible"
         role="list"
         aria-label="Recent conversations"
       >
@@ -81,11 +67,7 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
           const href = `/chat/c/${chat.id}`;
           const isActive = pathname === href;
           return (
-            <motion.li
-              key={chat.id}
-              variants={shouldReduceMotion ? undefined : itemVariants}
-              transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-            >
+            <li key={chat.id}>
               <SidebarConversationItem
                 chat={chat}
                 isActive={isActive}
@@ -93,10 +75,10 @@ export function SidebarHistory({ onAction }: SidebarHistoryProps) {
                 onDelete={handleDelete}
                 isDeleting={isDeletingId === chat.id}
               />
-            </motion.li>
+            </li>
           );
         })}
-      </motion.ul>
+      </ul>
       {conversations.length > 6 && (
         <div className="px-2 pb-2">
           <Link

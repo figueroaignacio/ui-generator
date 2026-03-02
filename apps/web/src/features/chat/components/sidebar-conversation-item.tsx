@@ -46,7 +46,7 @@ export function SidebarConversationItem({
             : 'text-muted-foreground hover:bg-card hover:text-foreground',
         )}
       >
-        <span className="truncate">{chat.title ?? 'Thinking in a title...'}</span>
+        <span className="truncate">{chat.title ?? 'New chat'}</span>
       </Link>
 
       <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
