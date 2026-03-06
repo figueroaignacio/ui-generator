@@ -49,19 +49,14 @@ export class AppService {
       capabilities: [
         'Chat with AI (and pretend it understands you)',
         'Stream responses (so you can watch the AI "think")',
-        'Groq & Google model support (pick your poison)',
+        'Google model support',
         'OAuth (because passwords are so 2010)',
         'JWT tokens (guards protecting mostly vibes)',
       ],
       fun_facts: {
         tokens_consumed_this_session: Math.floor(Math.random() * 999999) + 42,
         probability_of_hallucination: `${(Math.random() * 15).toFixed(1)}%`,
-        models_available: [
-          'llama-3.3-70b-versatile',
-          'llama-3.1-8b-instant',
-          'gemini-2.5-flash-lite',
-          'gemini-2.5-flash',
-        ],
+        models_available: ['gemini-2.5-flash'],
         coffee_cups_needed_to_build_this: '∞',
       },
       docs: 'https://github.com/figueroaignacio/ai (good luck)',

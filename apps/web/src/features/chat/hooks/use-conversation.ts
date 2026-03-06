@@ -5,12 +5,10 @@ import {
   generateResponseStream as apiGenerateStream,
   getConversation,
 } from '../api/conversations.api';
-import { useModelStore } from '../store/model.store';
 import type { Conversation, ConversationWithMessages, Message } from '../types';
 
 export function useConversation(conversationId: string) {
   const queryClient = useQueryClient();
-  const { selectedModelId } = useModelStore();
   const [streamingMessage, setStreamingMessage] = useState<string | null>(null);
   const generatingRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -31,8 +29,7 @@ export function useConversation(conversationId: string) {
       abortControllerRef.current = controller;
 
       try {
-        const response = await apiGenerateStream(conversationId, selectedModelId);
-        // Note: apiGenerateStream doesn't take signal yet, but we'll use it to check for aborted state
+        const response = await apiGenerateStream(conversationId);
 
         const reader = response.body?.getReader();
         if (!reader) throw new Error('No reader available');

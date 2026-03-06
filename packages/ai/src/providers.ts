@@ -1,14 +1,10 @@
-import { google } from '@ai-sdk/google';
-import { createGroq } from '@ai-sdk/groq';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import type { LanguageModelV3 } from '@ai-sdk/provider';
 
-export { google };
+export const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+});
 
-export function resolveModel(model: string, groqApiKey: string): LanguageModelV3 {
-  const groq = createGroq({ apiKey: groqApiKey });
+export const model: LanguageModelV3 = google('gemini-2.5-flash');
 
-  if (model.startsWith('groq/')) return groq(model.replace('groq/', ''));
-  if (model.startsWith('google/')) return google(model.replace('google/', ''));
-
-  return groq('llama-3.3-70b-versatile');
-}
+export const MODEL_ID = 'gemini-2.5-flash' as const;

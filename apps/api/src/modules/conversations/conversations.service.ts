@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { generateText, resolveModel, streamText, SYSTEM_PROMPT } from '@repo/ai';
+import { generateText, model, streamText, SYSTEM_PROMPT } from '@repo/ai';
 import { Repository } from 'typeorm';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -105,10 +105,10 @@ export class ConversationsService {
 
     try {
       this.logger.log(
-        `[generateResponse] Calling Groq (llama-3.3-70b-versatile) for conversation ${conversationId}...`,
+        `[generateResponse] Calling Google (gemini-2.5-flash) for conversation ${conversationId}...`,
       );
       const { text } = await generateText({
-        model: this.resolveModel('groq/llama-3.3-70b-versatile'),
+        model,
         system: SYSTEM_PROMPT,
         messages: history,
       });
@@ -134,15 +134,7 @@ export class ConversationsService {
     }
   }
 
-  private resolveModel(model: string) {
-    return resolveModel(model, this.configService.get<string>('GROQ_API_KEY') ?? '');
-  }
-
-  async generateStreamResponse(
-    conversationId: string,
-    userId: string,
-    model = 'groq/llama-3.3-70b-versatile',
-  ): Promise<any> {
+  async generateStreamResponse(conversationId: string, userId: string): Promise<any> {
     this.logger.log(`[generateStreamResponse] Started for ID: ${conversationId}, User: ${userId}`);
     const conversation = await this.findOne(conversationId, userId);
 
@@ -156,7 +148,7 @@ export class ConversationsService {
     })) as any[];
 
     const result = streamText({
-      model: this.resolveModel(model),
+      model,
       system: SYSTEM_PROMPT,
       messages: history,
       onFinish: async ({ text }) => {
@@ -176,7 +168,7 @@ export class ConversationsService {
 
   private generateAndSaveTitle(conversation: Conversation, firstMessage: string): void {
     generateText({
-      model: this.resolveModel('groq/llama-3.3-70b-versatile'),
+      model,
       system: SYSTEM_PROMPT,
       prompt: `Generate a concise, descriptive sidebar title (max 6 words, no quotes, no punctuation at the end) that summarizes this chat request: "${firstMessage}"`,
     })

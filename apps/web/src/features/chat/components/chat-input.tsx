@@ -4,7 +4,6 @@ import { Loading03Icon, SentIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { cn } from '@repo/ui/lib/cn';
 import { useEffect, useRef } from 'react';
-import { ModelSelector } from './model-selector';
 
 export interface ChatInputProps {
   value: string;
@@ -52,10 +51,7 @@ export function ChatInput({
         disabled={isLoading}
         aria-label="Message input"
       />
-      <div className="flex items-center justify-between px-3 pb-3 pt-1">
-        <div>
-          <ModelSelector />
-        </div>
+      <div className="flex items-center justify-end px-3 pb-3 pt-1">
         <div>
           {isLoading ? (
             <button

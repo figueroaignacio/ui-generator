@@ -57,10 +57,9 @@ export class ConversationsController {
   async generateStream(
     @CurrentUser() user: User,
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { model?: string },
     @Res() res: Response,
   ) {
-    const result = await this.conversationsService.generateStreamResponse(id, user.id, body?.model);
+    const result = await this.conversationsService.generateStreamResponse(id, user.id);
     return result.pipeTextStreamToResponse(res);
   }
 
