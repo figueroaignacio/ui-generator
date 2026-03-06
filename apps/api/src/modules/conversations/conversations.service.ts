@@ -5,9 +5,14 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { generateText, model, streamText, SYSTEM_PROMPT } from '@repo/ai';
+import {
+  createAgentUIStreamResponse,
+  generateText,
+  model,
+  nachaiAgent,
+  SYSTEM_PROMPT,
+} from '@repo/ai';
 import { Repository } from 'typeorm';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -23,7 +28,6 @@ export class ConversationsService {
     private readonly conversationRepo: Repository<Conversation>,
     @InjectRepository(Message)
     private readonly messageRepo: Repository<Message>,
-    private readonly configService: ConfigService,
   ) {}
 
   async create(userId: string, dto: CreateConversationDto): Promise<Conversation> {
@@ -104,20 +108,16 @@ export class ConversationsService {
     })) as any[];
 
     try {
-      this.logger.log(
-        `[generateResponse] Calling Google (gemini-2.5-flash) for conversation ${conversationId}...`,
-      );
-      const { text } = await generateText({
-        model,
-        system: SYSTEM_PROMPT,
+      this.logger.log(`[generateResponse] Calling agent for conversation ${conversationId}...`);
+      const result = await nachaiAgent.generate({
         messages: history,
       });
 
-      this.logger.log(`[generateResponse] Gemini success, text length: ${text.length}`);
+      this.logger.log(`[generateResponse] Agent success, text length: ${result.text.length}`);
 
       const assistantMessage = this.messageRepo.create({
         role: MessageRole.ASSISTANT,
-        content: text,
+        content: result.text,
         conversationId,
       });
 
@@ -130,11 +130,14 @@ export class ConversationsService {
         `[generateResponse] ERROR in generateResponse: ${error.message}`,
         error.stack,
       );
-      throw new InternalServerErrorException(`Gemini Error: ${error.message}`);
+      throw new InternalServerErrorException(`Agent Error: ${error.message}`);
     }
   }
 
-  async generateStreamResponse(conversationId: string, userId: string): Promise<any> {
+  async generateStreamResponse(
+    conversationId: string,
+    userId: string,
+  ): Promise<globalThis.Response> {
     this.logger.log(`[generateStreamResponse] Started for ID: ${conversationId}, User: ${userId}`);
     const conversation = await this.findOne(conversationId, userId);
 
@@ -142,28 +145,33 @@ export class ConversationsService {
       throw new NotFoundException('No messages found in this conversation');
     }
 
-    const history = conversation.messages.map(msg => ({
+    const uiMessages = conversation.messages.map(msg => ({
+      id: msg.id,
       role: msg.role as 'user' | 'assistant',
-      content: msg.content,
-    })) as any[];
+      parts: [{ type: 'text' as const, text: msg.content }],
+    }));
 
-    const result = streamText({
-      model,
-      system: SYSTEM_PROMPT,
-      messages: history,
-      onFinish: async ({ text }) => {
-        this.logger.log(`[generateStreamResponse] Finished, saving message...`);
-        const assistantMessage = this.messageRepo.create({
-          role: MessageRole.ASSISTANT,
-          content: text,
-          conversationId,
-        });
-        await this.messageRepo.save(assistantMessage);
-        await this.conversationRepo.update(conversationId, { updatedAt: new Date() });
+    return createAgentUIStreamResponse({
+      agent: nachaiAgent as any,
+      uiMessages,
+      onFinish: async ({ responseMessage }) => {
+        const text = responseMessage.parts
+          ?.filter((p: any) => p.type === 'text')
+          .map((p: any) => p.text)
+          .join('');
+
+        if (text) {
+          this.logger.log(`[generateStreamResponse] Finished, saving message...`);
+          const assistantMessage = this.messageRepo.create({
+            role: MessageRole.ASSISTANT,
+            content: text,
+            conversationId,
+          });
+          await this.messageRepo.save(assistantMessage);
+          await this.conversationRepo.update(conversationId, { updatedAt: new Date() });
+        }
       },
     });
-
-    return result;
   }
 
   private generateAndSaveTitle(conversation: Conversation, firstMessage: string): void {

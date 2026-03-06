@@ -59,8 +59,28 @@ export class ConversationsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Res() res: Response,
   ) {
-    const result = await this.conversationsService.generateStreamResponse(id, user.id);
-    return result.pipeTextStreamToResponse(res);
+    const webResponse = await this.conversationsService.generateStreamResponse(id, user.id);
+
+    res.setHeader('Content-Type', webResponse.headers.get('Content-Type') ?? 'text/plain');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const reader = webResponse.body?.getReader();
+    if (!reader) {
+      res.status(500).end();
+      return;
+    }
+
+    const pump = async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(value);
+      }
+      res.end();
+    };
+
+    pump().catch(() => res.end());
   }
 
   @Delete(':id')
