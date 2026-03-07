@@ -197,7 +197,7 @@ export class ConversationsService {
     generateText({
       model,
       system: SYSTEM_PROMPT,
-      prompt: `Generate a concise, descriptive sidebar title (max 6 words, no quotes, no punctuation at the end) that summarizes this chat request: "${firstMessage}"`,
+      prompt: `Generate a concise, descriptive sidebar title (max 6 words, no quotes, no punctuation at the end) that summarizes this chat request. IMPORTANT: The title MUST be in the EXACT SAME LANGUAGE as the user's request: "${firstMessage}"`,
     })
       .then(({ text }) => {
         const title = text.trim().slice(0, 100);

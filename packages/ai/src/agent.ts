@@ -6,7 +6,7 @@ import { getCurrentDate, searchNpmPackage } from './tools';
 /*
 
 (•_•)
-<)   )╯  if works {
+<)   )╯  if (works) {
  /   \     dontTouchIt();
          } 
 
