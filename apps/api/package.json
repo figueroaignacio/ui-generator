@@ -1,12 +1,14 @@
 {
   "name": "api",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend for CommitCode Platform",
   "scripts": {
     "build": "nest build",
     "start": "nest start",
     "dev": "nest start --watch",
     "start:prod": "node dist/main",
+    "lint": "eslint .",
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
@@ -44,6 +46,8 @@
     "@types/node": "^25.5.0",
     "@types/passport-github2": "^1.2.9",
     "@types/passport-jwt": "^4.0.1",
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "^9.21.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
   }
