@@ -21,7 +21,9 @@ export class AiService {
       });
       return result.text;
     } catch (error) {
-      this.logger.error(`Error generating text response: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Error generating text response: ${error instanceof Error ? error.message : String(error)}`,
+      );
       throw error;
     }
   }
@@ -47,7 +49,9 @@ export class AiService {
       });
       return text.trim().slice(0, 100);
     } catch (error) {
-      this.logger.error(`Failed to generate title: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to generate title: ${error instanceof Error ? error.message : String(error)}`,
+      );
       return 'New Conversation';
     }
   }
