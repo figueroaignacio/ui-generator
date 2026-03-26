@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { MessageRole } from '../entities/message.entity';
 
 export class CreateMessageDto {
@@ -8,4 +8,8 @@ export class CreateMessageDto {
   @IsString()
   @IsNotEmpty()
   content: string;
+
+  @IsOptional()
+  @IsArray()
+  parts?: any[];
 }

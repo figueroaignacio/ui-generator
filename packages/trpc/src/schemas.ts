@@ -16,6 +16,7 @@ export const MessageSchema = z.object({
   id: z.string(),
   role: z.enum(['user', 'assistant']),
   content: z.string(),
+  parts: z.array(z.unknown()).optional(),
   conversationId: z.string(),
   createdAt: z.union([z.string(), z.date()]),
 });

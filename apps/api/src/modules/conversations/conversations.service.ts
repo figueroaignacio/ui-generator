@@ -74,6 +74,7 @@ export class ConversationsService {
     const message = this.messageRepo.create({
       ...dto,
       conversationId,
+      parts: dto.parts,
     });
     const savedMessage = await this.messageRepo.save(message);
 
@@ -157,6 +158,7 @@ export class ConversationsService {
           const userMessage = this.messageRepo.create({
             role: MessageRole.USER,
             content: textContent,
+            parts: lastMsg.parts,
             conversationId,
           });
           await this.messageRepo.save(userMessage);
@@ -171,19 +173,23 @@ export class ConversationsService {
     }
 
     return createAgentUIStreamResponse({
-      agent: nachaiAgent as any,
+      agent: nachaiAgent,
       uiMessages,
+      maxSteps: 10,
       onFinish: async ({ responseMessage }) => {
         const text = responseMessage.parts
           ?.filter((p: any) => p.type === 'text')
           .map((p: any) => p.text)
           .join('');
 
-        if (text) {
-          this.logger.log(`[generateStreamResponse] Finished, saving message...`);
+        const parts = responseMessage.parts;
+
+        if (text || parts?.length) {
+          this.logger.log(`[generateStreamResponse] Finished, saving message with ${parts?.length ?? 0} parts...`);
           const assistantMessage = this.messageRepo.create({
             role: MessageRole.ASSISTANT,
-            content: text,
+            content: text ?? '',
+            parts: parts as any[],
             conversationId,
           });
           await this.messageRepo.save(assistantMessage);

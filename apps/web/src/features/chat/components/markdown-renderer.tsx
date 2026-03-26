@@ -32,9 +32,11 @@ const markdownComponents = {
 
     if (!inline && (match || isMultiline)) {
       return (
-        <CodeBlock language={match?.[1]} value={value}>
-          {children}
-        </CodeBlock>
+        <div className="group/code relative">
+          <CodeBlock language={match?.[1]} value={value}>
+            {children}
+          </CodeBlock>
+        </div>
       );
     }
 

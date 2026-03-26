@@ -24,6 +24,9 @@ export class Message {
   @Column({ type: 'text' })
   content: string;
 
+  @Column({ type: 'json', nullable: true })
+  parts?: any[];
+
   @Index()
   @Column()
   conversationId: string;

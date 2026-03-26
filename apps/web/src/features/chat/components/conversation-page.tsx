@@ -3,8 +3,10 @@
 import { ChatInput } from '@/features/chat/components/chat-input';
 import { ChatMessage } from '@/features/chat/components/chat-message';
 import { ChatSkeleton } from '@/features/chat/components/chat-skeleton';
+import { useArtifactStore } from '@/features/chat/store/artifact.store';
 import { trpc } from '@/lib/trpc';
-import { useChat } from '@ai-sdk/react';
+import { useChat, type UIMessage } from '@ai-sdk/react';
+import { Callout } from '@repo/ui/components/callout';
 import { DefaultChatTransport } from 'ai';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePendingPromptStore } from '../store/pending-prompt.store';
@@ -20,6 +22,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
   const hasLoadedRef = useRef(false);
   const hasInitialSentRef = useRef(false);
   const consumePendingPrompt = usePendingPromptStore(s => s.consumePendingPrompt);
+  const isArtifactOpen = useArtifactStore(s => s.isOpen);
 
   const transport = useMemo(
     () =>
@@ -32,6 +35,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 
   const {
     messages,
+    error,
     status,
     sendMessage: sendAIMessage,
     setMessages,
@@ -76,7 +80,9 @@ export function ConversationPage({ id }: ConversationPageProps) {
       const uiMessages = conversation.messages.map(msg => ({
         id: msg.id,
         role: msg.role as 'user' | 'assistant',
-        parts: [{ type: 'text' as const, text: msg.content }],
+        parts: msg.parts?.length
+          ? (msg.parts as UIMessage['parts'])
+          : [{ type: 'text' as const, text: msg.content }],
       }));
 
       setMessages(uiMessages);
@@ -101,13 +107,15 @@ export function ConversationPage({ id }: ConversationPageProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full transition-all duration-300">
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
         {isInitialLoading ? (
           <ChatSkeleton key="skeleton" />
         ) : (
           <div
-            className="flex flex-col gap-6 px-4 py-6 max-w-3xl mx-auto w-full"
+            className={`flex flex-col gap-6 px-4 py-6 mx-auto w-full transition-all duration-300 ${
+              isArtifactOpen ? 'max-w-4xl' : 'max-w-3xl'
+            }`}
             role="log"
             aria-live="polite"
             aria-label="Chat messages"
@@ -118,12 +126,23 @@ export function ConversationPage({ id }: ConversationPageProps) {
               return <ChatMessage key={msg.id} message={msg} isStreaming={isMsgStreaming} />;
             })}
 
+            {error && (
+              <Callout variant="danger" title="An error has occurred" className="w-full mt-4">
+                {error.message ||
+                  'An unexpected error occurred. Please try again or check your quota.'}
+              </Callout>
+            )}
+
             <div ref={bottomRef} className="h-4" />
           </div>
         )}
       </div>
       <div className="shrink-0 px-4 py-3">
-        <div className="max-w-3xl mx-auto">
+        <div
+          className={`mx-auto transition-all duration-300 ${
+            isArtifactOpen ? 'max-w-4xl' : 'max-w-3xl'
+          }`}
+        >
           <ChatInput
             value={input}
             onChange={setInput}
