@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, JetBrains_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, JetBrains_Mono, Outfit } from 'next/font/google';
 
 export const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -12,5 +12,10 @@ export const geistMono = Geist_Mono({
 
 export const jetbrains = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
+  subsets: ['latin'],
+});
+
+export const outfit = Outfit({
+  variable: '--font-outfit',
   subsets: ['latin'],
 });

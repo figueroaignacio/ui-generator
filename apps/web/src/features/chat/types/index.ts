@@ -17,3 +17,22 @@ export interface Message {
 export interface ConversationWithMessages extends Conversation {
   messages: Message[];
 }
+
+export interface SafePart {
+  type: string;
+  text?: string;
+  toolInvocation?: {
+    toolName: string;
+    args: Record<string, unknown>;
+    input?: unknown;
+    result?: unknown;
+    state: string;
+    toolCallId: string;
+  };
+  args?: Record<string, unknown>;
+  input?: unknown;
+  result?: unknown;
+  state?: string;
+  toolCallId?: string;
+  error?: unknown;
+}

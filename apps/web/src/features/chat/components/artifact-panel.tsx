@@ -30,12 +30,12 @@ export function ArtifactPanel() {
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 220 }}
             className={cn(
-              'fixed inset-y-0 right-0 z-50 flex flex-col bg-secondary shadow-2xl',
-              'w-full md:relative md:inset-auto md:z-0 md:w-[55%] xl:w-[65%] md:shadow-xl',
-              'rounded-none md:rounded-xl my-0 md:my-4 mr-0 md:mr-4 ml-0',
-              'h-full md:h-[calc(100vh-2rem)] border-l border-border md:border',
+              'fixed inset-y-0 right-0 z-50 flex flex-col glass-panel shadow-2xl',
+              'w-full md:relative md:inset-auto md:z-0 md:w-[55%] xl:w-[65%] md:shadow-2xl',
+              'rounded-none md:rounded-2xl my-0 md:my-4 mr-0 md:mr-4 ml-0',
+              'h-full md:h-[calc(100vh-2rem)] border-l border-white/5 md:border',
             )}
           >
             <div className="flex shrink-0 items-center justify-between border-b border-border px-4 h-16">

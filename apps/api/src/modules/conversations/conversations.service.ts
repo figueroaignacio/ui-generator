@@ -5,15 +5,9 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import {
-  createAgentUIStreamResponse,
-  generateText,
-  model,
-  nachaiAgent,
-  SYSTEM_PROMPT,
-} from '@repo/ai';
-import { Repository } from 'typeorm';
+import { type AIMessage, type UIMessage } from '@repo/ai';
+import { AiService } from '../ai/ai.service';
+import { ConversationsRepository } from './conversations.repository';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Conversation } from './entities/conversation.entity';
@@ -24,34 +18,20 @@ export class ConversationsService {
   private readonly logger = new Logger(ConversationsService.name);
 
   constructor(
-    @InjectRepository(Conversation)
-    private readonly conversationRepo: Repository<Conversation>,
-    @InjectRepository(Message)
-    private readonly messageRepo: Repository<Message>,
+    private readonly repository: ConversationsRepository,
+    private readonly aiService: AiService,
   ) {}
 
   async create(userId: string, dto: CreateConversationDto): Promise<Conversation> {
-    const conversation = this.conversationRepo.create({
-      ...dto,
-      userId,
-    });
-    return await this.conversationRepo.save(conversation);
+    return await this.repository.create(userId, dto.title);
   }
 
   async findAllByUser(userId: string): Promise<Conversation[]> {
-    return await this.conversationRepo.find({
-      where: { userId },
-      order: { updatedAt: 'DESC' },
-      select: ['id', 'title', 'userId', 'createdAt', 'updatedAt'],
-    });
+    return await this.repository.findByUser(userId);
   }
 
   async findOne(id: string, userId: string): Promise<Conversation> {
-    const conversation = await this.conversationRepo.findOne({
-      where: { id },
-      relations: ['messages'],
-      order: { messages: { createdAt: 'ASC' } } as any,
-    });
+    const conversation = await this.repository.findOneWithMessages(id);
 
     if (!conversation) {
       throw new NotFoundException(`Conversation with ID ${id} not found`);
@@ -71,27 +51,24 @@ export class ConversationsService {
   ): Promise<Message> {
     const conversation = await this.findOne(conversationId, userId);
 
-    const message = this.messageRepo.create({
+    const message = await this.repository.createMessage({
       ...dto,
       conversationId,
-      parts: dto.parts,
+      parts: (dto.parts as any[]) || [],
     });
-    const savedMessage = await this.messageRepo.save(message);
 
     if (dto.role === MessageRole.USER && !conversation.title) {
-      this.generateAndSaveTitle(conversation, dto.content);
+      void this.generateAndSaveTitle(conversation, dto.content);
     }
 
-    await this.conversationRepo.update(conversationId, {
-      updatedAt: new Date(),
-    });
+    await this.repository.updateTimestamp(conversationId);
 
-    return savedMessage;
+    return message;
   }
 
   async remove(id: string, userId: string): Promise<void> {
-    const conversation = await this.findOne(id, userId);
-    await this.conversationRepo.remove(conversation);
+    await this.findOne(id, userId);
+    await this.repository.delete(id);
   }
 
   async generateResponse(conversationId: string, userId: string): Promise<Message> {
@@ -103,42 +80,37 @@ export class ConversationsService {
       throw new NotFoundException('No messages found in this conversation');
     }
 
-    const history = conversation.messages.map(msg => ({
+    const history: AIMessage[] = conversation.messages.map(msg => ({
       role: msg.role as 'user' | 'assistant',
       content: msg.content,
-    })) as any[];
+    }));
 
     try {
-      this.logger.log(`[generateResponse] Calling agent for conversation ${conversationId}...`);
-      const result = await nachaiAgent.generate({
-        messages: history,
-      });
+      const text = await this.aiService.generateTextResponse(history);
 
-      this.logger.log(`[generateResponse] Agent success, text length: ${result.text.length}`);
-
-      const assistantMessage = this.messageRepo.create({
+      const saved = await this.repository.createMessage({
         role: MessageRole.ASSISTANT,
-        content: result.text,
+        content: text,
         conversationId,
       });
 
-      const saved = await this.messageRepo.save(assistantMessage);
-      await this.conversationRepo.update(conversationId, { updatedAt: new Date() });
+      await this.repository.updateTimestamp(conversationId);
 
       return saved;
-    } catch (error: any) {
+    } catch (error) {
       this.logger.error(
-        `[generateResponse] ERROR in generateResponse: ${error.message}`,
-        error.stack,
+        `[generateResponse] ERROR in generateResponse: ${error instanceof Error ? error.message : String(error)}`,
       );
-      throw new InternalServerErrorException(`Agent Error: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Agent Error: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
   async generateStreamResponse(
     conversationId: string,
     userId: string,
-    uiMessages: any[],
+    uiMessages: UIMessage[],
   ): Promise<globalThis.Response> {
     this.logger.log(`[generateStreamResponse] Started for ID: ${conversationId}, User: ${userId}`);
     const conversation = await this.findOne(conversationId, userId);
@@ -150,71 +122,60 @@ export class ConversationsService {
           typeof lastMsg.content === 'string'
             ? lastMsg.content
             : (lastMsg.parts
-                ?.filter((p: any) => p.type === 'text')
-                .map((p: any) => p.text)
+                ?.filter(p => p.type === 'text')
+                .map(p => (p as any).text)
                 .join('') ?? '');
 
         if (textContent) {
-          const userMessage = this.messageRepo.create({
+          await this.repository.createMessage({
             role: MessageRole.USER,
             content: textContent,
-            parts: lastMsg.parts,
+            parts: lastMsg.parts as any[],
             conversationId,
           });
-          await this.messageRepo.save(userMessage);
 
           if (!conversation.title) {
-            this.generateAndSaveTitle(conversation, textContent);
+            void this.generateAndSaveTitle(conversation, textContent);
           }
 
-          await this.conversationRepo.update(conversationId, { updatedAt: new Date() });
+          await this.repository.updateTimestamp(conversationId);
         }
       }
     }
 
-    return createAgentUIStreamResponse({
-      agent: nachaiAgent,
-      uiMessages,
-      maxSteps: 10,
-      onFinish: async ({ responseMessage }) => {
-        const text = responseMessage.parts
-          ?.filter((p: any) => p.type === 'text')
-          .map((p: any) => p.text)
-          .join('');
+    return this.aiService.createStreamResponse(uiMessages, async ({ responseMessage }) => {
+      const parts = responseMessage.parts as any[];
+      const text = parts
+        ?.filter(p => p.type === 'text')
+        .map(p => p.text)
+        .join('');
 
-        const parts = responseMessage.parts;
-
-        if (text || parts?.length) {
-          this.logger.log(
-            `[generateStreamResponse] Finished, saving message with ${parts?.length ?? 0} parts...`,
-          );
-          const assistantMessage = this.messageRepo.create({
-            role: MessageRole.ASSISTANT,
-            content: text ?? '',
-            parts: parts as any[],
-            conversationId,
-          });
-          await this.messageRepo.save(assistantMessage);
-          await this.conversationRepo.update(conversationId, { updatedAt: new Date() });
-        }
-      },
+      if (text || parts?.length) {
+        this.logger.log(
+          `[generateStreamResponse] Finished, saving message with ${parts?.length ?? 0} parts...`,
+        );
+        await this.repository.createMessage({
+          role: MessageRole.ASSISTANT,
+          content: text ?? '',
+          parts: parts,
+          conversationId,
+        });
+        await this.repository.updateTimestamp(conversationId);
+      }
     });
   }
 
-  private generateAndSaveTitle(conversation: Conversation, firstMessage: string): void {
-    generateText({
-      model,
-      system: SYSTEM_PROMPT,
-      prompt: `Generate a concise, descriptive sidebar title (max 6 words, no quotes, no punctuation at the end) that summarizes this chat request. IMPORTANT: The title MUST be in the EXACT SAME LANGUAGE as the user's request: "${firstMessage}"`,
-    })
-      .then(({ text }) => {
-        const title = text.trim().slice(0, 100);
-        return this.conversationRepo.update(conversation.id, { title });
-      })
-      .catch(err => {
-        this.logger.error(
-          `Failed to generate title for conversation ${conversation.id}: ${err.message}`,
-        );
-      });
+  private async generateAndSaveTitle(
+    conversation: Conversation,
+    firstMessage: string,
+  ): Promise<void> {
+    try {
+      const title = await this.aiService.generateChatTitle(firstMessage);
+      await this.repository.updateTitle(conversation.id, title);
+    } catch (err) {
+      this.logger.error(
+        `Failed to generate title for conversation ${conversation.id}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
   }
 }

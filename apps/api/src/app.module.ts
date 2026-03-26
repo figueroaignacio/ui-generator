@@ -10,6 +10,7 @@ import { Message } from './modules/conversations/entities/message.entity';
 import { TrpcModule } from './modules/trpc/trpc.module';
 import { User } from './modules/users/entities/user.entity';
 import { UsersModule } from './modules/users/users.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UsersModule } from './modules/users/users.module';
     AuthModule,
     ConversationsModule,
     TrpcModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

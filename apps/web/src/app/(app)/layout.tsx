@@ -7,6 +7,7 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
   return (
     <AuthGuard>
       <div className="flex h-screen overflow-hidden bg-background">
+        <div className="grain-overlay" />
         <Sidebar />
         <div className="relative flex flex-1 overflow-hidden bg-background chat-bg">
           <div className="flex flex-1 flex-col overflow-hidden">

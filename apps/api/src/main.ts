@@ -44,7 +44,9 @@ async function bootstrap() {
           try {
             const payload = jwtService.verify(token);
             user = { id: payload.sub, username: payload.username };
-          } catch {}
+          } catch {
+            // Silently ignore invalid or expired tokens in MW context
+          }
         }
         return { req, res, user };
       },
