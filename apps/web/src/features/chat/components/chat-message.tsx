@@ -81,7 +81,7 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
                     : ((invocation.args || invocation.input || {}) as Record<string, unknown>);
 
                 const isGenerating =
-                  (!('result' in invocation) && invocation.state !== 'result') && isStreaming;
+                  !('result' in invocation) && invocation.state !== 'result' && isStreaming;
 
                 if (isGenerating && !component.name) {
                   return (

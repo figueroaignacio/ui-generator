@@ -185,7 +185,9 @@ export class ConversationsService {
         const parts = responseMessage.parts;
 
         if (text || parts?.length) {
-          this.logger.log(`[generateStreamResponse] Finished, saving message with ${parts?.length ?? 0} parts...`);
+          this.logger.log(
+            `[generateStreamResponse] Finished, saving message with ${parts?.length ?? 0} parts...`,
+          );
           const assistantMessage = this.messageRepo.create({
             role: MessageRole.ASSISTANT,
             content: text ?? '',
