@@ -1,85 +1,83 @@
-# NachAI 🚀
+# NachAI
 
-**NachAI** is a cutting-edge, AI-powered UI generation platform designed to transform natural language descriptions into production-ready web interfaces. Built with a modern monorepo architecture, it leverages advanced generative AI to streamline the design-to-code workflow.
+NachAI is an AI-driven UI generation platform that converts natural language descriptions into production-ready web interfaces. Developed with a modern monorepo architecture, it utilizes generative AI to optimize the design-to-code pipeline.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15%2B-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=for-the-badge&logo=nestjs)](https://nestjs.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Turbo](https://img.shields.io/badge/Turbo-2.0-EF4444?style=for-the-badge&logo=turborepo)](https://turbo.build/)
 
-## ✨ Key Features
+## Technical Features
 
-- 🤖 **AI-Powered Generation**: Instantly generate professional UI components using simple text prompts.
-- ⚡ **Real-Time Streaming**: Watch your designs come to life with live AI response streaming.
-- 🔐 **Secure Authentication**: Seamless login via GitHub and Google OAuth, powered by Passport.js and JWT.
-- 🎨 **Modern Design System**: Built with Tailwind CSS 4, Motion, and Hugeicons for a premium, responsive experience.
-- 🗄️ **Persistent History**: Save, search, and manage your previous creative sessions.
-- 🏗️ **Robust Architecture**: A scalable monorepo structure using Turborepo and pnpm.
+- AI-Driven Generation: Orchestrates professional UI component generation through structured natural language processing.
+- Real-Time Streaming Middleware: Implements live AI response streaming for instantaneous feedback loops.
+- Identity and Access Management: Secure authentication architecture utilizing GitHub and Google OAuth providers, implemented via Passport.js and JSON Web Tokens (JWT).
+- Unified Design System: Comprehensive UI framework built on Tailwind CSS 4, Motion, and Hugeicons for a standardized, responsive interface.
+- Data Persistence: Manages session history and creative assets through a scalable storage layer.
+- Monorepo Infrastructure: Optimized development workflow using Turborepo and pnpm for efficient workspace management.
 
-## 🛠️ Tech Stack
+## Technical Architecture
 
-### Frontend (`apps/web`)
+### Frontend (apps/web)
 
-- **Framework**: Next.js 15+ (App Router)
-- **Styling**: Tailwind CSS 4 & PostCSS
-- **Animations**: Framer Motion
-- **State Management**: Zustand & TanStack Query
-- **Markdown Support**: React Markdown & Highlight.js
+- Framework: Next.js 16+ utilizing App Router and Server Components.
+- Styling: Utility-first CSS via Tailwind CSS 4 with PostCSS.
+- Animations: Declarative motion logic using Framer Motion.
+- State Management: Lightweight client state with Zustand and server state synchronization via TanStack Query.
+- API Client: Type-safe communication layer powered by tRPC.
 
-### Backend (`apps/api`)
+### Backend (apps/api)
 
-- **Framework**: NestJS
-- **Database**: PostgreSQL with TypeORM
-- **AI Integration**: Vercel AI SDK & Google Gemini
-- **Security**: Passport (JWT, Google, GitHub), Bcrypt, Helmet
+- Framework: NestJS 11 for a modular, scalable server-side architecture.
+- Persistence: TypeORM with PostgreSQL for relational data mapping and migrations.
+- AI Integration: Vercel AI SDK and Google Gemini for advanced model orchestration.
+- Security Infrastructure: Passport-based middleware for multi-provider OAuth and JWT-based session management.
 
-### Shared Packages (`packages/*`)
+### Shared Infrastructure (packages/*)
 
-- `@repo/ui`: Shared React component library.
-- `@repo/typescript-config`: Shared TypeScript configurations.
-- `@repo/eslint-config`: Shared linting rules.
+- @repo/ui: Standardized React component library and theme tokens.
+- @repo/ai: Core AI orchestration logic and prompt management.
+- @repo/trpc: Shared API contract ensuring full stack type safety.
+- @repo/typescript-config: Centralized TypeScript configurations.
+- @repo/eslint-config: Unified linting and code quality standards.
 
-## 🚀 Getting Started
+## Development Setup
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [pnpm](https://pnpm.io/) (v9 or higher)
-- [PostgreSQL](https://www.postgresql.org/)
+- Node.js (v18 or higher)
+- pnpm (v9 or higher)
+- PostgreSQL
 
 ### Installation
 
 1. Clone the repository:
-
    ```bash
    git clone https://github.com/your-username/ui-generator.git
    cd ui-generator
    ```
 
-2. Install dependencies:
-
+2. Bootstrap dependencies:
    ```bash
    pnpm install
    ```
 
-3. Set up environment variables:
-   - Create a `.env` file in `apps/api/` (see `apps/api/.env.example`).
-   - Create a `.env.local` file in `apps/web/` (see `apps/web/.env.local`).
+3. Configure environment variables:
+   - apps/api: Define variables in .env (refer to .env.example).
+   - apps/web: Define variables in .env.local (refer to .env.local.example).
 
-### Development
+### Running Locally
 
-Run all applications in development mode:
-
+Execute the following command to start all workspaces in development mode:
 ```bash
 pnpm dev
 ```
 
-The applications will be available at:
+Project endpoints:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:3001
 
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend: [http://localhost:3001](http://localhost:3001)
-
-## 📁 Project Structure
+## Workspace Structure
 
 ```text
 .
@@ -87,21 +85,21 @@ The applications will be available at:
 │   ├── api           # NestJS backend service
 │   └── web           # Next.js frontend application
 ├── packages
+│   ├── ai            # Core AI orchestration library
 │   ├── ui            # Shared component library
-│   ├── eslint-config # Shared ESLint configuration
-│   └── tsconfig      # Shared TypeScript configuration
+│   ├── trpc          # Type-safe API contract
+│   ├── eslint-config # Shared ESLint configurations
+│   └── tsconfig      # Shared TypeScript configurations
 ├── package.json
 └── turbo.json
 ```
 
-## 🏗️ Build
+## Build Process
 
-To build all apps and packages:
-
+To compile all applications and packages via Turborepo:
 ```bash
 pnpm build
 ```
 
----
+Created by [Ignacio Figueroa](https://github.com/figueroaignacio)
 
-Built with ❤️ by [Ignacio Figueroa](https://github.com/figueroaignacio)
