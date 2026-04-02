@@ -1,9 +1,0 @@
-dist
-.turbo
-node_modules
-pnpm-lock.yaml
-.next
-out
-.env*
-*.log
-coverage
