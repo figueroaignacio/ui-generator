@@ -8,7 +8,7 @@ from app.modules.auth.service import AuthService
 from app.modules.users.model import User
 from app.modules.users.service import UserService
 from fastapi import APIRouter, Cookie, Depends, Response
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -23,8 +23,8 @@ def github_login():
     state = secrets.token_urlsafe(32)
     service = AuthService(user_service=None)
     url = service.get_github_authorize_url(state)
-    redirect = RedirectResponse(url)
-    redirect.set_cookie(
+    response = JSONResponse(content={"url": url})
+    response.set_cookie(
         key="oauth_state",
         value=state,
         httponly=True,
@@ -33,7 +33,7 @@ def github_login():
         secure=False,
         path="/",
     )
-    return redirect
+    return response
 
 
 @router.get("/github/callback")
@@ -59,8 +59,8 @@ def google_login():
     state = secrets.token_urlsafe(32)
     service = AuthService(user_service=None)
     url = service.get_google_authorize_url(state)
-    redirect = RedirectResponse(url)
-    redirect.set_cookie(
+    response = JSONResponse(content={"url": url})
+    response.set_cookie(
         key="oauth_state",
         value=state,
         httponly=True,
@@ -69,7 +69,7 @@ def google_login():
         secure=False,
         path="/",
     )
-    return redirect
+    return response
 
 
 @router.get("/google/callback")
