@@ -1,5 +1,6 @@
 import { Logo } from "@/shared/components/logo";
 import { Button } from "@repo/ui/components/button";
+import { LoginDialog } from "./login-dialog";
 
 export function Header() {
   return (
@@ -8,7 +9,9 @@ export function Header() {
         <Logo />
       </div>
       <div>
-        <Button variant="secondary">Try NachUI</Button>
+        <LoginDialog>
+          <Button variant="secondary">Try NachUI</Button>
+        </LoginDialog>
       </div>
     </header>
   );
