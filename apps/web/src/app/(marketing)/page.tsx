@@ -1,10 +1,5 @@
-import { Header } from "@/modules/landing/components/header";
+import { MarketingPage } from "@/modules/marketing/components/marketing-page";
 
-export default function Home() {
-  return (
-    <>
-      <Header />
-      <div></div>
-    </>
-  );
+export default function HomePage() {
+  return <MarketingPage />;
 }

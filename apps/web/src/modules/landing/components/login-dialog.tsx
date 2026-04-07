@@ -25,7 +25,7 @@ export function LoginDialog({ children }: LoginDialogProps) {
 
   return (
     <Dialog>
-      <Dialog.Trigger>{children}</Dialog.Trigger>
+      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
       <Dialog.Content className="w-md">
         <Dialog.Header className="space-y-5">
           <Dialog.Title>
@@ -37,23 +37,22 @@ export function LoginDialog({ children }: LoginDialogProps) {
         </Dialog.Header>
         <div className="flex flex-col gap-y-3 mt-5">
           <Button
-            onClick={handleGoogle}
-            variant="outline"
-            leftIcon={<GoogleIcon />}>
-            Continue with Google
-          </Button>
-          <Button
             onClick={handleGithub}
             variant="outline"
             leftIcon={<GitHubIcon />}>
             Continue with GitHub
           </Button>
+          <Button
+            onClick={handleGoogle}
+            variant="outline"
+            leftIcon={<GoogleIcon />}>
+            Continue with Google
+          </Button>
         </div>
         <Separator className="my-4" />
         <p className="text-xs text-muted-foreground text-center">
-          Al continuar aceptás los{" "}
-          <Link href="/terms">Términos de servicio</Link> y la{" "}
-          <Link href="/privacy">Política de privacidad</Link>
+          To continue you accept our <Link href="/terms">Terms of Service</Link>{" "}
+          and Privacy Policy
         </p>
       </Dialog.Content>
     </Dialog>
