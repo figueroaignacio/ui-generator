@@ -1,4 +1,4 @@
-import { API_URL } from "@/lib/config";
+import { API_URL } from "@/shared/lib/config";
 
 export async function fetchMe() {
   const res = await fetch(`${API_URL}/users/me`, {

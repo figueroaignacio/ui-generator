@@ -1,4 +1,4 @@
-import { Providers } from "@/components/providers";
+import { Providers } from "@/shared/components/providers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,11 +28,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <header></header>
         <main>
           <Providers>{children}</Providers>
         </main>
-        <footer></footer>
       </body>
     </html>
   );
