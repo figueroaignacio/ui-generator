@@ -12,8 +12,14 @@ class ConversationRepository:
         conversation = Conversation(user_id=user_id, title=title)
         self.db.add(conversation)
         await self.db.flush()
-        await self.db.refresh(conversation)
-        return conversation
+
+        result = await self.db.execute(
+            select(Conversation)
+            .where(Conversation.id == conversation.id)
+            .options(selectinload(Conversation.messages))
+        )
+
+        return result.scalar_one()
 
     async def find_by_user(self, user_id: str) -> list[Conversation]:
         result = await self.db.execute(

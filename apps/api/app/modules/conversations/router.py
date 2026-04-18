@@ -5,10 +5,12 @@ from app.modules.conversations.schemas import (
     ConversationRead,
     MessageCreate,
     MessageRead,
+    StreamRequest,
 )
 from app.modules.conversations.service import ConversationService
 from app.modules.users.model import User
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/conversations", tags=["conversations"])
@@ -65,3 +67,14 @@ async def delete_conversation(
     svc: ConversationService = Depends(get_service),
 ):
     await svc.delete(conversation_id, user)
+
+
+@router.post("/{conversation_id}/stream")
+async def stream_response(
+    conversation_id: str,
+    body: StreamRequest,
+    user: User = Depends(get_current_user),
+    svc: ConversationService = Depends(get_service),
+):
+    generator = svc.generate_stream(conversation_id, user, body.content)
+    return StreamingResponse(generator, media_type="text/event-stream")

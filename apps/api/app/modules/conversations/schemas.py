@@ -39,3 +39,7 @@ class MessageCreate(BaseModel):
     role: MessageRole
     content: str
     parts: list | None = None
+
+
+class StreamRequest(BaseModel):
+    content: str
