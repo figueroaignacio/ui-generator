@@ -12,7 +12,7 @@ export function SidebarHeader() {
   return (
     <div
       className={`flex h-14 items-center px-4 ${openStyle ? "justify-between w-[290px]" : "justify-center w-[64px]"}`}>
-      {openStyle && <Logo className="h-6 w-6" />}
+      {openStyle && <Logo className="h-6 w-6" showLogo={false} />}
       <button
         onClick={toggle}
         className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer p-1.5 rounded-md hover:bg-muted"
