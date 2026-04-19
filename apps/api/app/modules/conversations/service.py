@@ -57,6 +57,7 @@ class ConversationService:
             role=MessageRole.USER,
             content=user_content,
         )
+        await self.repo.touch(conv.id)
 
         if not conv.title:
             asyncio.create_task(self._generate_title_safe(conv.id, user_content))
@@ -65,17 +66,13 @@ class ConversationService:
             {"role": msg.role.value, "content": msg.content} for msg in conv.messages
         ] + [{"role": "user", "content": user_content}]
 
-        # acumular respuesta
         full_response: list[str] = []
 
-        async def _stream():
-            async for chunk in self.ai.generate_stream(history):
-                full_response.append(chunk)
-                yield f"data: {chunk}\n\n"
-            yield "data: [DONE]\n\n"
+        async for chunk in self.ai.generate_stream(history):
+            full_response.append(chunk)
+            yield f"data: {chunk}\n\n"
 
-        async for chunk in _stream():
-            yield chunk
+        yield "data: [DONE]\n\n"
 
         await self.repo.create_message(
             conversation_id=conv.id,

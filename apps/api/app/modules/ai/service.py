@@ -46,9 +46,13 @@ class AIService:
             raise AIServiceError(detail=str(e))
 
     def _build_contents(self, history: list[dict]) -> list[types.Content]:
+        role_map = {
+            "user": "user",
+            "assistant": "model",
+        }
         return [
             types.Content(
-                role=msg["role"],
+                role=role_map.get(msg["role"], "user"),
                 parts=[types.Part(text=msg["content"])],
             )
             for msg in history

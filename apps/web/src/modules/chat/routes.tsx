@@ -3,6 +3,7 @@ import { createRoute, redirect } from "@tanstack/react-router";
 import { fetchMe } from "../auth/api/auth.api";
 import { useAuthStore } from "../auth/store/auth.store";
 import { ChatPage } from "./components/chat-page";
+import { ConversationPage } from "./components/conversation-page";
 import { ChatLayout } from "./layout";
 
 export const chatLayoutRoute = createRoute({
@@ -38,5 +39,5 @@ export const chatNewRoute = createRoute({
 export const chatConversationRoute = createRoute({
   getParentRoute: () => chatLayoutRoute,
   path: "/c/$id",
-  component: () => <div>Conversation</div>,
+  component: ConversationPage,
 });
